@@ -14,9 +14,20 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      # - name: Container registory に認証する
+      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Container registory に認証する
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Docker ビルドする
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
-      - name: Docker イメージをプッシュする
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Docker ビルドする
+      #   run: docker build -t ghcr.io/${{ github.repository }}:latest .
+      # - name: Docker イメージをプッシュする
+      #   run: docker push ghcr.io/${{ github.repository }}:latest
+      - name: Docker をビルドおよびプッシュする
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
