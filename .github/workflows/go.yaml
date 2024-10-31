@@ -1,7 +1,14 @@
 name: Go Test
 
 on:
+  # Events
+  # - https://docs.github.com/ja/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#issue_comment
   push:
+  issue_comment:
+   types: [created, deleted]
+  schedule:
+   - cron: "0 9 1 * *" # At 09:00 on day-of-month 1.
+  workflow_dispatch:
 
 jobs:
   build:
