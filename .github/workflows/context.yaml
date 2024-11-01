@@ -19,3 +19,6 @@ jobs:
         id: checkout
       - name: actions/checkout のステータスを表示
         run: echo "${{ steps.checkout.conclusion }}"
+
+      - name: job のステータスを表示
+        run: echo "${{ job.status }}"
