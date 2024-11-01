@@ -15,6 +15,24 @@ jobs:
           echo "プルリクエストの番号: ${{ github.event.pull_request.number }}"
           echo "プルリクエストの作成者": ${{ github.event.pull_request.user.login }}
 
+      # - see: https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+      - name: github コンテキストの表示
+        # Be aware that it contains sensitive information such as github.token!
+        env:
+          GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
+        run: |
+          echo "github.action: ${{ github.action }}"
+          echo "github.actor: ${{ github.actor }}"
+          echo "github.env: ${{ github.env }}"
+          echo "github.repository: ${{ github.repository }}"
+          echo "github.workspace: ${{ github.workspace }}"
+          echo "github.event: $GITHUB_EVENT_CONTEXT"
+
+      - name: runner コンテキストの表示
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+
       - uses: actions/checkout@v4
         id: checkout
       - name: actions/checkout のステータスを表示
