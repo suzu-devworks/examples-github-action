@@ -32,6 +32,6 @@ jobs:
           name: build
           path: output/
       - name: GitHub Release へのデプロイ
-        run: gh release upload v1.0.0 output/artifact.zip
+        run: gh release upload v1.0.0 output/artifact.zip --clobber
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
