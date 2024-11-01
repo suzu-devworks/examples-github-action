@@ -22,6 +22,6 @@ jobs:
     if: ${{ always() }}   # build が失敗でも実行
     steps:
       - name: Slack通知
-        uses: rcCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
