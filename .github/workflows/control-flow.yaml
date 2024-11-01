@@ -1,7 +1,7 @@
 name: Chapter 3 - Control Flow
 
 on:
-  pull_request:
+  # pull_request:
   workflow_dispatch:
 
 jobs:
@@ -19,6 +19,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     needs: build
+    # see - https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions
     if: ${{ always() }}   # build が失敗でも実行
     steps:
       - name: Slack通知
