@@ -1,4 +1,4 @@
-name: context
+name: Chapter 3 - actions/context
 
 on:
   pull_request:
