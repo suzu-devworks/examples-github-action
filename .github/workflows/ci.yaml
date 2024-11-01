@@ -1,4 +1,4 @@
-name: ci
+name: Chapter 2 - CI
 
 on:
   pull_request:
