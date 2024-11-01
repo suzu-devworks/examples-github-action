@@ -11,7 +11,7 @@ jobs:
       - name: ビルド（ダミー）
         run: |
           date > dummy.txt
-          mkldir -p output
+          mkdir -p output
           zip output/artifact.zip dummy.txt
       - name: 成果物のアップロード
         uses: actions/upload-artifact@v4
