@@ -1,0 +1,33 @@
+name: Chapter 3 - Cache
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4  
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.1"
+          # cache: ftrue (default)
+
+  build-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4  
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+  build-dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4  
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.x"
+          cache: true
