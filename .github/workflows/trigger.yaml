@@ -1,9 +1,10 @@
 name: Chapter 3 - Work flow trigger
 
 on:
+  # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows
   pull_request:
-    # branches:
-    #   - "releases/**"
+    branches:
+      - "releases/**"
   push:
     branches:
       - "releases/**"
@@ -29,7 +30,7 @@ on:
 
 jobs:
   build:
-    name: さまざまなワークフロートリガー
+    name: Events that trigger workflows
     runs-on: ubuntu-latest
     steps:
       - name: イベント
