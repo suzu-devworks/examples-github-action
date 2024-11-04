@@ -1,0 +1,39 @@
+name: Chapter 3 - Work flow trigger
+
+on:
+  pull_request:
+    # branches:
+    #   - "releases/**"
+  push:
+    branches:
+      - "releases/**"
+
+  issues:
+    types: [opened, labeled]
+  schedule:
+    - cron: "0 16 2 * *"
+  workflow_dispatch:
+    inputs:
+      deploy_version:
+        description: "デプロイするバージョン"
+        required: true
+      deploy_target:
+        description: "デプロイ先環境"
+        required: true
+        default: "dev"
+        type: choise
+        options:
+          - dev
+          - staging
+          - prod
+
+jobs:
+  build:
+    name: さまざまなワークフロートリガー
+    runs-on: ubuntu-latest
+    steps:
+      - name: イベント
+        env:
+          GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
+        run: |
+          echo "github.event: $GITHUB_EVENT_CONTEXT"
