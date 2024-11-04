@@ -9,6 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo 'start!'  
+      - uses: actions/checkout@v4
+      - name: actions/cache で actions/setup-go のキャッシュを再現
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.1"
+          cache: false
+      - run: go install
 
   build-go:
     runs-on: ubuntu-latest
@@ -55,7 +66,7 @@ jobs:
     needs: [build-go, build-node, build-dotnet]
     steps:
       - uses: actions/checkout@v4
-      - name: actions/cache で actions/setup-go のキャッシュを再現
+      - name: build-start のキャッシュを取得?
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
