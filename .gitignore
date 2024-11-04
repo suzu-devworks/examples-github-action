@@ -26,3 +26,8 @@ go.work.sum
 
 # add node files.
 node_modules/
+
+# add dotnet files.
+obj/
+bin/
+.nuget/

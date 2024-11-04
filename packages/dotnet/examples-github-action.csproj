@@ -6,6 +6,8 @@
     <RootNamespace>examples_github_action</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- https://learn.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#locking-dependencies -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
