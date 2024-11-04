@@ -21,7 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "npm"
+          cache: "yarn"
+      - run: yarn install --frozen-lockfile
 
   build-dotnet:
     runs-on: ubuntu-latest
@@ -31,3 +32,4 @@ jobs:
         with:
           dotnet-version: "8.x"
           cache: true
+      - run: dotnet restore --locked-mode

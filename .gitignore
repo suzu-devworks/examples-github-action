@@ -23,3 +23,6 @@ go.work.sum
 
 # env file
 .env
+
+# add node files.
+node_modules/
