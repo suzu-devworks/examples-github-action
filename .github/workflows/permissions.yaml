@@ -1,0 +1,20 @@
+name: Chapter 3 - Permissions
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/permissions.yaml"
+
+jobs:
+  use_github_token:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Github CLI
+        run: gh auth status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
