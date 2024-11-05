@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/permissions.yaml"
+  workflow_dispatch:
 
 jobs:
   use_github_token:
