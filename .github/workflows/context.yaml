@@ -2,6 +2,8 @@ name: Chapter 3 - actions/context
 
 on:
   pull_request:
+    paths:
+      - ".github/workflows/context.yaml"
   workflow_dispatch:
 
 jobs:

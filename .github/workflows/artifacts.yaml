@@ -1,6 +1,9 @@
 name: Chapter 3 - actions/artifacts
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/artifacts.yaml"
   workflow_dispatch:
 
 jobs:
@@ -16,14 +19,14 @@ jobs:
       - name: 成果物のアップロード
         uses: actions/upload-artifact@v4
         with:
-            name: build
-            path: output/
-  
+          name: build
+          path: output/
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # buildジョブ後に実行
+    needs: build # buildジョブ後に実行
     permissions:
-      contents: write   # gh release upload に必要
+      contents: write # gh release upload に必要
     steps:
       - uses: actions/checkout@v4
       - name: 成果物のダウンロード
@@ -34,4 +37,4 @@ jobs:
       - name: GitHub Release へのデプロイ
         run: gh release upload v1.0.0 output/artifact.zip --clobber
         env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
