@@ -55,6 +55,9 @@ jobs:
   build-node-pnpm:
     runs-on: ubuntu-latest
     needs: build-node
+    defaults:
+      run:
+        working-directory: ./packages/nodes
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
