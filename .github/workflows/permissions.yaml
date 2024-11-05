@@ -17,4 +17,11 @@ jobs:
         run: gh auth status
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Show variables.
+        env:
+          VARIABLES_VALUE: ${{ vars.USER_VALUE }}
+          SECRETS_VALUE: ${{ secrets.USER_VALUE }}
+        run: | 
+          echo "$VARIABLES_VALUE"
+          echo "$SECRETS_VALUE"
 
