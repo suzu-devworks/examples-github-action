@@ -13,3 +13,25 @@ jobs:
       image: golang:1.23.2
     steps:
       - run: go version
+
+  service-container-job:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.PG_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connect postgres
+        run: |
+          psql -h localhost -U postgres -c '\d'
+        env:
+          PGPASSWORD: ${{ secrets.PG_PASSWORD }}
