@@ -1,0 +1,25 @@
+name: Chapter 4 - Matrix strategy
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/matrix.yaml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Example of a job running in parallel
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go-version: ["1.22", "1.23"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Ser up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Run go build
+        run: go build .
