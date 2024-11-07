@@ -20,7 +20,10 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-
 
       - run: echo "Do something"
-    
+      - run: echo $REF
+        env: 
+          REF: ${{ github.ref }}
+
       - uses: actions/cache/save@v4
         if: github.ref == '/refs/heads/main'
         with:
