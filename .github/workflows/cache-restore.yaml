@@ -1,0 +1,29 @@
+name: Chapter 4 - Cache save,restore
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cache-restore.yaml"
+  workflow_dispatch:
+
+jobs:
+  build-start:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./path-to-cahce
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-
+
+      - run: echo "Do something"
+    
+      - uses: actions/cache/save@v4
+        if: github.ref == '/refs/heads/main'
+        with:
+          path: |
+            ./path-to-cahce
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
