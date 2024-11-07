@@ -1,0 +1,15 @@
+name: Chapter 5 - Reusable workflow
+
+on:
+  workflow_call:
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+      - run: pnpm install
+      - uses: ./github/actions/setup-playwrite
+      - run: pnpm exec playwright test --project chromium
