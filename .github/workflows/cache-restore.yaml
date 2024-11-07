@@ -19,8 +19,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-
 
-      - run: echo "Do something"
-      - run: echo $REF
+      - run: |
+          echo "Do something"
+          echo "ref: $REF"
+          mkdir -p ./path-to-cahce
+          date > ./path-to-cahce/file
         env: 
           REF: ${{ github.ref }}
 
