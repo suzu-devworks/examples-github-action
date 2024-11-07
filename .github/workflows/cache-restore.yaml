@@ -19,8 +19,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-
 
-      - run: |
-          echo "Do something"
+      - run: echo "Do something"
+
+      - name: dummy 
+        run: |
+          echo "current is: $(date)"
+          echo "cache value is: $(cat ./path-to-cahce/file 2>/dev/null)"
           echo "ref: $REF"
           mkdir -p ./path-to-cahce
           date > ./path-to-cahce/file
