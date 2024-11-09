@@ -1,0 +1,58 @@
+name: Chapter 5 - CreaRerun only failed tests.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/rerun-only-failed-tests.yaml"
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./packages/nodes
+        
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      - name: Set envisonment
+        run: |
+          echo "TEST_RESULT_JSON=${{ runner.temp}}/test_result.json" >> $GITHUB_ENV
+          echo "FAILED_TEST_FILES=${{ runner.temp}}/failed_test_files.txt" >> $GITHUB_ENV
+
+      - name: Debug
+        run: |
+          echo "github.run_attempt is $ATTEMPT"
+          echo "github.ref_name is $REF_NAME"
+        env:
+          ATTEMPT: "${{ github.run_attempt }}"
+          REF_NAME: "${{ github.ref_name }}"
+
+      - name: Restore failed tests
+        # デフォルトブランチではない、かつ２度目の実行の場合のみ行う
+        if: ${{ github.run_attempt > 1 && github.ref_name != 'main' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: $"{{ env.FAILED_TEST_FILES }}"
+          key: failed-tests-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: failed-tests-${{ github.run_id }}
+
+      - name: Run test
+        run: npx vitest run --reporter default --reporter json --outputFile ${{ env.TEST_RESULT_JSON }} $(test -e ${{ env.FAILED_TEST_FILES }} && cat ${{ env.FAILED_TEST_FILES }})
+        
+      - name: Create failed tests file
+        # デフォルトブランチではない、かつテストが失敗した場合のみ行う
+        if: ${{ failure() && github.ref_name != 'main' }}
+        run: |
+          jq '.testResults[] | select(.status == "failed") | .name' ${{ env.TEST_RESULT_JSON }} | jq -s --raw-output 'join(" ")' > ${{ env.FAILED_TEST_FILES }}
+          cat ${{ env.FAILED_TEST_FILES }}
+
+      - name: Save failed tests
+        # デフォルトブランチではない、かつテストが失敗した場合のみ行う
+        if: ${{ failure() && github.ref_name != 'main' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.FAILED_TEST_FILES }}
+          key: failed-tests-${{ github.run_id }}-${{ github.run_attempt }}
