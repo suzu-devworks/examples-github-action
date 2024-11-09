@@ -1,0 +1,13 @@
+name: Chapter 5 - Update application for test environment
+run-name: "Update application for test environment: ${{ github.event.pull_request.number }}"
+
+on:
+  pull_request:
+    types: [ synchronize ]
+
+jobs:
+  update:
+    name: Update application
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Update application"

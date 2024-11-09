@@ -1,0 +1,13 @@
+name: Chapter 5 - Destoroy test environment
+run-name: "Destoroy test environment: ${{ github.event.pull_request.number }}"
+
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  update:
+    name: Destoroy test environment
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Destoroy test environment"
