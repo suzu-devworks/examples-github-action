@@ -3,7 +3,7 @@ run-name: "Update application for test environment: ${{ github.event.pull_reques
 
 on:
   pull_request:
-    types: [ synchromized ]
+    types: [ synchronize ]
 
 jobs:
   update:
