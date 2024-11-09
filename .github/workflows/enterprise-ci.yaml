@@ -1,0 +1,53 @@
+name: Chapter 5 - Enterprise project CI
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/enterprise-ci.yaml"
+      - "project/**"
+
+defaults:
+  run:
+    working-directory: project/
+
+jobs:
+  changed_directory:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.changed_directory.outputs.frontend }}
+      backend: ${{ steps.changed_directory.outputs.backend }}
+      renovate: ${{ steps.changed_directory.outputs.renovate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none # gitの履歴のみを取得する
+          fetch-depth: 2  # ファイルの変更を取得するために必要
+      - id: changed_directory
+        env: 
+          CHANGED: ${{ runner.temp }}/changed_files.txt
+        run: |
+          git diff --name-only HEAD^ > $CHANGED
+          grep --quiet '^project/frontend/' $CHANGED && echo "frontend=true" >> $GITHUB_OUTPUT
+          grep --quiet '^project/backend/' $CHANGED && echo "backend=true" >> $GITHUB_OUTPUT
+          grep --quiet '^project/renovate.json$' $CHANGED && echo "renovate=true" >> $GITHUB_OUTPUT
+          cat $CHANGED #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
+  frontend:
+    runs-on: ubuntu-latest
+    needs: changed_directory
+    if: ${{ needs.changed_directory.outputs.frontend == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Frontend passes lint, tests, and build are listed here."
+  backend:
+    runs-on: ubuntu-latest
+    needs: changed_directory
+    if: ${{ needs.changed_directory.outputs.backend == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Backend passes lint, tests, and build are listed here."
+  renovate:
+    runs-on: ubuntu-latest
+    needs: changed_directory
+    if: ${{ needs.changed_directory.outputs.renovate == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Configuration file changes that pass validation are listed here."
