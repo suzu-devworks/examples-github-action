@@ -1,0 +1,26 @@
+name: Chapter 5 - Reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        required: false
+        default: ${{ github.workspace }}
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:          
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          package_json_file: ${{ inputs.working-directory }}/package.json
+      - uses: actions/setup-node@v4
+      - run: pnpm install
+        working-directory: ${{ inputs.working-directory }}
+      - uses: ./.github/actions/setup-playwrite
+        with:
+          working-directory: ${{ inputs.working-directory }}
+      - run: pnpm exec playwright test --project chromium
+        working-directory: ${{ inputs.working-directory }}
