@@ -25,11 +25,11 @@ jobs:
         env: 
           CHANGED: ${{ runner.temp }}/changed_files.txt
         run: |
-          git diff --name-only HEAD^ > $CHANGED
-          grep --quiet '^project/frontend/' $CHANGED && echo "frontend=true" >> $GITHUB_OUTPUT
-          grep --quiet '^project/backend/' $CHANGED && echo "backend=true" >> $GITHUB_OUTPUT
-          grep --quiet '^project/renovate.json$' $CHANGED && echo "renovate=true" >> $GITHUB_OUTPUT
-          cat $CHANGED #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
+          git diff --name-only HEAD^ > "$CHANGED"
+          grep --quiet '^project/frontend/' "$CHANGED" && echo "frontend=true" >> "$GITHUB_OUTPUT"
+          grep --quiet '^project/backend/' "$CHANGED" && echo "backend=true" >> "$GITHUB_OUTPUT"
+          grep --quiet '^project/renovate.json$' "$CHANGED" && echo "renovate=true" >> "$GITHUB_OUTPUT"
+          cat "$CHANGED" #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
   frontend:
     runs-on: ubuntu-latest
     needs: changed_directory
