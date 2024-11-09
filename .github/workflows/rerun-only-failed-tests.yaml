@@ -38,7 +38,7 @@ jobs:
         # デフォルトブランチではない、かつテストが失敗した場合のみ行う
         if: ${{ failure() && github.ref_name != 'main' }}
         run: |
-          jq '.testResult[] | select(.status == "failed") | .name' ${{ env.TEST_RESULT_JSON }} | jq -s --raw-output 'join(" ")' > ${{ env.FAILED_TEST_FILES }}
+          jq '.testResults[] | select(.status == "failed") | .name' ${{ env.TEST_RESULT_JSON }} | jq -s --raw-output 'join(" ")' > ${{ env.FAILED_TEST_FILES }}
           cat ${{ env.FAILED_TEST_FILES }}
 
       - name: Save failed tests
