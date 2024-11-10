@@ -6,7 +6,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/rerun-only-failed-tests.yaml"
-  workflow_call:
+  workflow_dispatch:
 
 permissions: {}
 defaults:
