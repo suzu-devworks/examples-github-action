@@ -1,3 +1,5 @@
+# Chapter 5 メンテナンス性を考慮したワークフロー.
+---
 name: Chapter 5 - E2E test (Call resusable)
 
 on:
@@ -8,6 +10,11 @@ on:
       - ".github/actions/setup-playwrite/action.yaml"
       - "packages/node-e2e/**"
   workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
 
 jobs:
   e2e:

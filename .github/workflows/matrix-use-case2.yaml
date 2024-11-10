@@ -1,3 +1,5 @@
+# Chapter 4 ユースケース 2. 動的にジョブを構築する.
+---
 name: Chapter 4 - Matrix strategy use case 2
 
 on:
@@ -14,7 +16,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "matrix={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> "$GITHUB_OUTPUT"
 
   job2:
     needs: job1

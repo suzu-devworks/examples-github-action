@@ -1,3 +1,5 @@
+# Chapter 5 大規模開発におけるワークフローの最適化
+---
 name: Chapter 5 - Enterprise project CI
 on:
   pull_request:
@@ -5,13 +7,18 @@ on:
       - ".github/workflows/enterprise-ci.yaml"
       - "project/**"
 
+permissions: {}
 defaults:
   run:
+    shell: bash
     working-directory: project/
 
 jobs:
   changed_directory:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     outputs:
       frontend: ${{ steps.changed_directory.outputs.frontend }}
       backend: ${{ steps.changed_directory.outputs.backend }}
@@ -25,15 +32,18 @@ jobs:
         env: 
           CHANGED: ${{ runner.temp }}/changed_files.txt
         run: |
-          git diff --name-only HEAD^ > $CHANGED
-          grep --quiet '^project/frontend/' $CHANGED && echo "frontend=true" >> $GITHUB_OUTPUT
-          grep --quiet '^project/backend/' $CHANGED && echo "backend=true" >> $GITHUB_OUTPUT
-          grep --quiet '^project/renovate.json$' $CHANGED && echo "renovate=true" >> $GITHUB_OUTPUT
-          cat $CHANGED #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
+          git diff --name-only HEAD^ > "$CHANGED"
+          grep --quiet '^project/frontend/' "$CHANGED" && echo "frontend=true" >> "$GITHUB_OUTPUT"
+          grep --quiet '^project/backend/' "$CHANGED" && echo "backend=true" >> "$GITHUB_OUTPUT"
+          grep --quiet '^project/renovate.json$' "$CHANGED" && echo "renovate=true" >> "$GITHUB_OUTPUT"
+          cat "$CHANGED" #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
   frontend:
     runs-on: ubuntu-latest
     needs: changed_directory
     if: ${{ needs.changed_directory.outputs.frontend == 'true' }}
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - run: echo "Frontend passes lint, tests, and build are listed here."
@@ -41,6 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: changed_directory
     if: ${{ needs.changed_directory.outputs.backend == 'true' }}
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - run: echo "Backend passes lint, tests, and build are listed here."
@@ -48,6 +61,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: changed_directory
     if: ${{ needs.changed_directory.outputs.renovate == 'true' }}
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - run: echo "Configuration file changes that pass validation are listed here."

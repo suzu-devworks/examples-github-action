@@ -1,3 +1,5 @@
+# Chapter 3 ジョブの成果物の保存、次のジョブへの受け渡し.
+---
 name: Chapter 3 - actions/artifacts
 
 on:
@@ -5,6 +7,10 @@ on:
     paths:
       - ".github/workflows/artifacts.yaml"
   workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:

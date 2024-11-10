@@ -1,3 +1,5 @@
+# Chapter 3 ワークフロー内で利用可能な値（コンテキスト）.
+---
 name: Chapter 3 - actions/context
 
 on:
@@ -12,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: プルリクエストの情報を表示
+        env:
+          GITHUB_HEAD_REF: "${{ github.head_ref }}"
         run: |
-          echo "プルリクエストのブランチ名: ${{ github.head_ref }}"
+          echo "プルリクエストのブランチ名: $GITHUB_HEAD_REF"
           echo "プルリクエストの番号: ${{ github.event.pull_request.number }}"
           echo "プルリクエストの作成者": ${{ github.event.pull_request.user.login }}
 

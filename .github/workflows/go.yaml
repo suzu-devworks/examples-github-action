@@ -1,3 +1,5 @@
+# Chapter 1 Hello World、ワークフローの定義ファイルの書き方.
+---
 name: Chapter 1 - Go Test
 
 on:
@@ -13,9 +15,17 @@ on:
     - cron: "0 9 1 * *" # At 09:00 on day-of-month 1.
   workflow_dispatch:
 
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 

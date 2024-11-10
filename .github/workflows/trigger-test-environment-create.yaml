@@ -1,14 +1,25 @@
+# Chapter 5 プルリクエストがオープンされたときに動作確認環境を新規作成＆アプリケーションをデプロイ.
+---
 name: Chapter 5 - Create test environment & Deploy application.
 run-name: "Create test environment & Deploy application: ${{ github.event.pull_request.number }}"
 
 on:
   pull_request:
     types: [ opened, reopened]
+  workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
 
 jobs:
   create:
     name: Create test environment
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - run: echo "Create test environment"
 
@@ -16,5 +27,8 @@ jobs:
     name: Deploy application
     needs: create
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - run: echo "Deploy application"

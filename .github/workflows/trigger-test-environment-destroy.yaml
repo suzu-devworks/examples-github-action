@@ -1,13 +1,24 @@
+# Chapter 5 プルリクエストがクローズされたときに動作確認環境を破壊.
+---
 name: Chapter 5 - Destoroy test environment
 run-name: "Destoroy test environment: ${{ github.event.pull_request.number }}"
 
 on:
   pull_request:
     types: [ closed ]
+  workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
 
 jobs:
   update:
     name: Destoroy test environment
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:
       - run: echo "Destoroy test environment"
