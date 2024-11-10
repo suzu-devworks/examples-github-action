@@ -1,3 +1,5 @@
+# Chapter 5 失敗したテストのみを re-run する.
+---
 name: Chapter 5 - Rerun only failed tests.
 
 on:
@@ -6,9 +8,17 @@ on:
       - ".github/workflows/rerun-only-failed-tests.yaml"
   workflow_call:
 
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: ./packages/nodes

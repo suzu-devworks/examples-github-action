@@ -1,3 +1,5 @@
+# Chapter 4 matrix strategy によるジョブ実行の応用.
+---
 name: Chapter 4 - Matrix strategy
 
 on:
@@ -10,6 +12,7 @@ jobs:
   build:
     name: Example of a job running in parallel
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
     strategy:
       matrix:
         go-version: ["1.22", "1.23"]

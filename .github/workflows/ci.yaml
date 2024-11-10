@@ -1,3 +1,5 @@
+# Chapter 2 プルリクエスト駆動でCIを実現する.
+---
 name: Chapter 2 - CI
 
 on:
@@ -8,6 +10,11 @@ on:
       - "go.mod"
       - "go.sum"
       - "**.go"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   ci:

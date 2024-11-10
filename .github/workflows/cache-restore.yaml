@@ -1,3 +1,5 @@
+# Chapter 4 キャッシュの取り扱い、save, restoreを用いてキャッシュのタイミングを制御する.
+--- 
 name: Chapter 4 - Cache save,restore
 
 on:
@@ -9,6 +11,7 @@ on:
 jobs:
   build-start:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache/restore@v4

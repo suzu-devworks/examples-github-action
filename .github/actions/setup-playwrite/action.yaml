@@ -1,3 +1,5 @@
+# Chapter 5 メンテナンス性を考慮したワークフロー (Custom actions).
+---
 name: 'Setup Playwrite'
 description: 'Setup Playwrite with deps and cache'
 inputs:

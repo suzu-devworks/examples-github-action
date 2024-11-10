@@ -1,3 +1,5 @@
+# Chapter 2 マージ駆動でCDを実現する.
+---
 name: Chapter 2 - CD
 
 on:
@@ -8,13 +10,17 @@ on:
       - 'go.mod'
       - 'go.sum'
       - '**.go'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   cd:
     name: cd
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4

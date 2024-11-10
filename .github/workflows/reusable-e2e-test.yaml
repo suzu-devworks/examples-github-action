@@ -1,3 +1,5 @@
+# Chapter 5 メンテナンス性を考慮したワークフロー (Reusable workflow).
+---
 name: Chapter 5 - Reusable workflow
 
 on:
@@ -8,9 +10,17 @@ on:
         required: false
         default: ${{ github.workspace }}
 
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
     steps:          
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
