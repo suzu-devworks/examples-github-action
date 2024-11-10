@@ -11,13 +11,10 @@ on:
       - "packages/node-e2e/**"
   workflow_dispatch:
 
-permissions: {}
-defaults:
-  run:
-    shell: bash
-
 jobs:
   e2e:
+    permissions:
+      contents: read
     uses: ./.github/workflows/reusable-e2e-test.yaml
     with:
       working-directory: 'packages/node-e2e'

@@ -10,7 +10,6 @@ on:
         required: false
         default: ${{ github.workspace }}
 
-permissions: {}
 defaults:
   run:
     shell: bash
@@ -27,6 +26,8 @@ jobs:
         with:
           package_json_file: ${{ inputs.working-directory }}/package.json
       - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - run: pnpm install
         working-directory: ${{ inputs.working-directory }}
       - uses: ./.github/actions/setup-playwrite
