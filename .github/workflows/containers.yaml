@@ -39,7 +39,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Connect postgres
+        # ERROR: column d.daticulocale does not exist
+        # This occurs when running "psql \l" from a v16 client to a v17 server.
         run: |
-          psql -h localhost -U postgres -c '\l'
+          psql --version
+          psql -h localhost -U postgres -c 'SELECT version()'
         env:
           PGPASSWORD: ${{ secrets.PG_PASSWORD }}
