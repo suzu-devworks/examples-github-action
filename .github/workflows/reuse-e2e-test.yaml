@@ -11,6 +11,8 @@ on:
       - "packages/node-e2e/**"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   e2e:
     permissions:

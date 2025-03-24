@@ -8,9 +8,13 @@ on:
       - ".github/workflows/cache-restore.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build-start:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4

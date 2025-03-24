@@ -10,6 +10,7 @@ on:
         required: false
         default: ${{ github.workspace }}
 
+permissions: {}
 defaults:
   run:
     shell: bash

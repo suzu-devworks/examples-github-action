@@ -8,10 +8,14 @@ on:
       - ".github/workflows/matrix-use-case1.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   test:
     name: Example of splitting tests and running them in parallel
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         shared: [1/3, 2/3, 3/3]

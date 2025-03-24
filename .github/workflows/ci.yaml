@@ -12,6 +12,7 @@ on:
       - "**.go"
   workflow_dispatch:
 
+permissions: {}
 defaults:
   run:
     shell: bash
@@ -20,6 +21,8 @@ jobs:
   ci:
     name: ci
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: チェックアウトする
         uses: actions/checkout@v4

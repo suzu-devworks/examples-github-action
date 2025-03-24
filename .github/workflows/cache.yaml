@@ -8,15 +8,21 @@ on:
       - ".github/workflows/cache.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build-start:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - run: echo 'start!'
 
   build-go:
     runs-on: ubuntu-latest
     needs: build-start
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -28,6 +34,8 @@ jobs:
   build-go-cache:
     runs-on: ubuntu-latest
     needs: build-go
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: build-start のキャッシュを再現
@@ -44,6 +52,8 @@ jobs:
   build-node:
     runs-on: ubuntu-latest
     needs: build-start
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       # https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#caching-packages-data
@@ -57,6 +67,8 @@ jobs:
   build-node-pnpm:
     runs-on: ubuntu-latest
     needs: build-node
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: ./packages/nodes
@@ -75,6 +87,8 @@ jobs:
   build-dotnet:
     runs-on: ubuntu-latest
     needs: build-start
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: ./packages/dotnet
@@ -92,5 +106,7 @@ jobs:
   build-join:
     runs-on: ubuntu-latest
     needs: [build-go-cache, build-node-pnpm, build-dotnet]
+    permissions:
+      contents: read
     steps:
       - run: echo 'end'
