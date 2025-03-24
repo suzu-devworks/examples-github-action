@@ -1,5 +1,7 @@
 # examples-github-action
 
+[![CodeQL](https://github.com/suzu-devworks/examples-github-action/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/suzu-devworks/examples-github-action/actions/workflows/github-code-scanning/codeql)
+
 ## What is the purpose of this repository?
 
 This repository is a personal playground for the author to learn Github Actions and try out its features. It may be useful for developers who have the same problem.
