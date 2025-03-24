@@ -8,10 +8,14 @@ on:
       - ".github/workflows/matrix-use-case2.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   job1:
     name: Dynamic job building example
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -23,5 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
+    permissions:
+      contents: read
     steps:
       - run: echo "Matrix - Project ${{ matrix.project }}, Config ${{ matrix.config }}"

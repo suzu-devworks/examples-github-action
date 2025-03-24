@@ -8,10 +8,14 @@ on:
       - ".github/workflows/context.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   display:
     name: display
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: プルリクエストの情報を表示
         env:

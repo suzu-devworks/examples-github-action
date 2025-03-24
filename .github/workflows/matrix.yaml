@@ -8,10 +8,14 @@ on:
       - ".github/workflows/matrix.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build:
     name: Example of a job running in parallel
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     timeout-minutes: 5
     strategy:
       matrix:

@@ -7,6 +7,8 @@ on:
       - ".github/workflows/permissions.yaml"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   use_github_token:
     runs-on: ubuntu-latest

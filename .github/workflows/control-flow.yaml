@@ -6,9 +6,13 @@ on:
   # pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: ビルド（失敗)
         id: fail_step
@@ -23,6 +27,8 @@ jobs:
     needs: build
     # see - https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions
     if: ${{ always() }}   # build が失敗でも実行
+    permissions:
+      contents: read
     steps:
       - name: Slack通知
         uses: rtCamp/action-slack-notify@v2
