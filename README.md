@@ -4,11 +4,11 @@
 
 ## What is the purpose of this repository?
 
-This repository is a personal playground for the author to learn Github Actions and try out its features. It may be useful for developers who have the same problem.
+This repository is the author's personal playground for learning Github Actions and experimenting with its features.
+
+The content here may be useful to other developers who have the same problem.
 
 However, please note that the code described here is based on my personal opinion and may contain many inaccuracies.
-
-It may contain many inaccuracies.
 
 ## Referneces
 
