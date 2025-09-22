@@ -22,12 +22,12 @@ jobs:
     defaults:
       run:
         working-directory: ./packages/nodes
-        
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
 
-      - name: Set envisonment
+      - name: Set environment
         run: |
           echo "TEST_RESULT_JSON=${{ runner.temp}}/test_result.json" >> "$GITHUB_ENV"
           echo "FAILED_TEST_FILES=${{ runner.temp}}/failed_test_files.txt" >> "$GITHUB_ENV"
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run test
         run: npx vitest run --reporter default --reporter json --outputFile "${{ env.TEST_RESULT_JSON }}" "$(test -e "${{ env.FAILED_TEST_FILES }}" && cat "${{ env.FAILED_TEST_FILES }}")"
-        
+
       - name: Create failed tests file
         # デフォルトブランチではない、かつテストが失敗した場合のみ行う
         if: ${{ failure() && github.ref_name != 'main' }}

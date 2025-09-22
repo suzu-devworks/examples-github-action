@@ -1,13 +1,13 @@
-# Chapter 5 メンテナンス性を考慮したワークフロー.
+# Chapter 5 再利用可能なメンテナンス性を考慮したワークフロー.
 ---
-name: Chapter 5 - E2E test (Call resusable)
+name: Chapter 5 - E2E test (Call)
 
 on:
   pull_request:
     paths:
       - ".github/workflows/e2e-test.yaml"
       - ".github/workflows/reusable-e2e-test.yaml"
-      - ".github/actions/setup-playwrite/action.yaml"
+      - ".github/actions/setup-playwright/action.yaml"
       - "packages/node-e2e/**"
   workflow_dispatch:
 
@@ -19,4 +19,4 @@ jobs:
       contents: read
     uses: ./.github/workflows/reusable-e2e-test.yaml
     with:
-      working-directory: 'packages/node-e2e'
+      working-directory: "packages/node-e2e"

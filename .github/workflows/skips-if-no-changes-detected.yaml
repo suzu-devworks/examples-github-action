@@ -1,6 +1,6 @@
-# Chapter 5 大規模開発におけるワークフローの最適化
+# Chapter 5 ファイルの変更を確認し、変更の有無でジョブをスキップするワークフロー
 ---
-name: Chapter 5 - Enterprise project CI
+name: Chapter 5 - A workflow that checks for file changes and skips the job if no changes are detected.
 on:
   pull_request:
     paths:
@@ -27,9 +27,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           filter: blob:none # gitの履歴のみを取得する
-          fetch-depth: 2  # ファイルの変更を取得するために必要
+          fetch-depth: 2 # ファイルの変更を取得するために必要
       - id: changed_directory
-        env: 
+        env:
           CHANGED: ${{ runner.temp }}/changed_files.txt
         run: |
           git diff --name-only HEAD^ > "$CHANGED"

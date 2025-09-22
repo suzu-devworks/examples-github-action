@@ -1,6 +1,6 @@
-# Chapter 5 メンテナンス性を考慮したワークフロー (Reusable workflow).
+# Chapter 5 再利用可能なワークフローの定義.
 ---
-name: Chapter 5 - Reusable workflow
+name: Chapter 5 - E2E test (Reusable workflow)
 
 on:
   workflow_call:
@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
     timeout-minutes: 5
-    steps:          
+    steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -31,7 +31,7 @@ jobs:
           node-version: "22"
       - run: pnpm install
         working-directory: ${{ inputs.working-directory }}
-      - uses: ./.github/actions/setup-playwrite
+      - uses: ./.github/actions/setup-playwright
         with:
           working-directory: ${{ inputs.working-directory }}
       - run: pnpm exec playwright test --project chromium
