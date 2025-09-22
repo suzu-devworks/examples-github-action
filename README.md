@@ -4,7 +4,7 @@
 
 ## What is the purpose of this repository?
 
-This repository is the author's personal playground for learning Github Actions and experimenting with its features.
+This repository is a personal playground for the author to learn and experiment with Github Actions.
 
 The content may also be useful for other developers facing similar issues.
 
