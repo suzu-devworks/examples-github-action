@@ -10,7 +10,7 @@ The content may also be useful for other developers facing similar issues.
 
 However, please note that the code is based on the author's personal understanding and may contain errors or inaccuracies.
 
-## Index
+## Table of Contents
 
 - Chapter 1 - Basics of GitHub Actions
   - [Hello World](./.github/workflows/go.yaml)
