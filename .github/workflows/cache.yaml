@@ -71,7 +71,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./packages/nodes
+        working-directory: ./packages/node
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2

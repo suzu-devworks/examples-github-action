@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 5
     defaults:
       run:
-        working-directory: ./packages/nodes
+        working-directory: ./packages/node
 
     steps:
       - uses: actions/checkout@v4
