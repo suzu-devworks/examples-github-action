@@ -46,8 +46,6 @@ jobs:
       # Finalize the array and pass it to the output
       - name: Set matrix output
         id: set-matrix
-        env:
-          CHANGED_DIRS: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           # For manual execution (workflow_dispatch), target all projects under articles/detections/
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
@@ -55,13 +53,13 @@ jobs:
             echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
           else
             # json array returned from the plugin (e.g. ["articles/detections/AAA", "articles/detections/BBB"])
-            # CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
+            CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
 
             if [ "$CHANGED_DIRS" = "[]" ] || [ -z "$CHANGED_DIRS" ]; then
               echo "projects=[]" >> $GITHUB_OUTPUT
             else
               # Trim to "articles/detections/web" -> "web" instantly with jq
-              PROJECTS=$(jq -n -c --argjson dirs "$CHANGED_DIRS" '$dirs | map(split("/") | .[2])')
+              PROJECTS=$(echo "$CHANGED_DIRS" | jq -c '-R | fromjson | map(split("/") | .[2])')
               echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
             fi
           fi
