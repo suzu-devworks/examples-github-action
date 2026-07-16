@@ -90,7 +90,7 @@ jobs:
       - name: Find Target and Define Assets Path
         run: |
           # 1. First, search for the target
-          TARGET=$(find articles/detections/category-1/${{ matrix.project }} -maxdepth 2 \( -name "*.md" -o -name "*.slnx" -o -name "*.sln" \) | head -n 1)
+          TARGET=$(find articles/detections/${{ matrix.project }} -maxdepth 2 \( -name "*.md" -o -name "*.slnx" -o -name "*.sln" \) | head -n 1)
 
           if [ -z "$TARGET" ]; then
             echo "::error::No .slnx, or .sln found in articles/detections/${{ matrix.project }}"
