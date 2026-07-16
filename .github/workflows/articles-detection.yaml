@@ -111,7 +111,18 @@ jobs:
           echo "🎯 Target detected: $TARGET"
           echo "📂 Test assets will be generated at: $PROJECT_ASSETS_PATH"
 
-      - name: Restore dependencies for ${{ matrix.project }}
+      - name: Build for ${{ matrix.project }}
         run: |
           echo ${{ env.TARGET_PATH }}
-          echo ${{ env.TEST_ASSETS_PATH }}
+      
+      - name: Run Test Assets Scripts (If exists)
+        run: |
+          SCRIPT_PATH="articles/detections/${{ matrix.project }}/scripts/generate-test-assets.sh"
+          if [ -f "$SCRIPT_PATH" ]; then
+            echo "Found asset generation script. Running..."
+            chmod +x "$SCRIPT_PATH"
+            "$SCRIPT_PATH" ${{ env.TEST_ASSETS_PATH }}
+          else
+            echo "No asset generation script found. Skipping this step."
+          fi
+        timeout-minutes: 1
