@@ -1,4 +1,4 @@
-name: ci
+name: article-detection
 
 on:
   # push:
