@@ -1,3 +1,5 @@
+# atricles/detection.yaml - 変更を自動検知しプロジェクトごとに並列実行するテスト
+---
 name: articles/detection
 
 on:
@@ -47,10 +49,10 @@ jobs:
         run: |
           # For manual execution (workflow_dispatch), target all projects under articles/detections/
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            PROJECTS=$(ls -d articles/detections/*/ | cut -d'/' -f2 | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            PROJECTS=$(ls -d articles/detections/*/ | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
             echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
           else
-            # json array returned from the plugin (e.g. ["articles/detections/web", "articles/detections/databases"])
+            # json array returned from the plugin (e.g. ["articles/detections/AAA", "articles/detections/BBB"])
             CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
 
             if [ "$CHANGED_DIRS" = "[]" ] || [ -z "$CHANGED_DIRS" ]; then
@@ -84,3 +86,32 @@ jobs:
           echo "=========================================================="
           echo "🚀 Processing Project: ${{ matrix.project }}"
           echo "=========================================================="
+      
+      - name: Find Target and Define Assets Path
+        run: |
+          # 1. First, search for the target
+          TARGET=$(find articles/detections/category-1/${{ matrix.project }} -maxdepth 2 \( -name "*.md" -o -name "*.slnx" -o -name "*.sln" \) | head -n 1)
+
+          if [ -z "$TARGET" ]; then
+            echo "::error::No .slnx, or .sln found in articles/detections/${{ matrix.project }}"
+            exit 1
+          fi
+
+          # 2. Get the target's parent directory (e.g., src/web/Web.slnx -> src/web)
+          TARGET_DIR=$(dirname "$TARGET")
+
+          # 3. Set the absolute path for the assets folder within that parent directory
+          # (e.g., /github/workspace/src/web/assets)
+          PROJECT_ASSETS_PATH="${{ github.workspace }}/$TARGET_DIR/assets"
+
+          # Save each to environment variables
+          echo "TARGET_PATH=$TARGET" >> $GITHUB_ENV
+          echo "TEST_ASSETS_PATH=$PROJECT_ASSETS_PATH" >> $GITHUB_ENV
+
+          echo "🎯 Target detected: $TARGET"
+          echo "📂 Test assets will be generated at: $PROJECT_ASSETS_PATH"
+
+      - name: Restore dependencies for ${{ matrix.project }}
+        run: |
+          echo ${{ env.TARGET_PATH }}
+          echo ${{ env.TEST_ASSETS_PATH }}
