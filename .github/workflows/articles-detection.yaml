@@ -39,6 +39,7 @@ jobs:
         uses: tj-actions/changed-files@v47
         with:
           json: true
+          matrix: true
           dir_names: true
           dir_names_max_depth: 3 # articles/detections/xxx
           files: articles/detections/**
@@ -59,7 +60,7 @@ jobs:
               echo "projects=[]" >> $GITHUB_OUTPUT
             else
               # Trim to "articles/detections/web" -> "web" instantly with jq
-              PROJECTS=$(echo "$CHANGED_DIRS" | jq -c '-R | fromjson | map(split("/") | .[2])')
+              PROJECTS=$(echo "$CHANGED_DIRS" | jq -c 'map(split("/") | .[2])')
               echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
             fi
           fi
