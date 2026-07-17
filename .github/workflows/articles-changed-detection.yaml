@@ -1,6 +1,6 @@
-# atricles/detection.yaml - 変更を自動検知しプロジェクトごとに並列実行するテスト
+# articles-changed-detection.yaml - 変更を自動検知しプロジェクトごとに並列実行するテスト
 ---
-name: articles/detection
+name: Articles - Changed detection sample
 
 on:
   # push:
@@ -41,25 +41,25 @@ jobs:
           json: true
           matrix: true
           dir_names: true
-          dir_names_max_depth: 3 # articles/detections/xxx
+          dir_names_max_depth: 3 # path/to/xxx
           files: articles/detections/**
 
       # Finalize the array and pass it to the output
       - name: Set matrix output
         id: set-matrix
         run: |
-          # For manual execution (workflow_dispatch), target all projects under articles/detections/
+          # For manual execution (workflow_dispatch), target all projects under path/to/
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             PROJECTS=$(ls -d articles/detections/*/ | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
             echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
           else
-            # json array returned from the plugin (e.g. ["articles/detections/AAA", "articles/detections/BBB"])
+            # json array returned from the plugin (e.g. ["path/to/AAA", "path/to/BBB"])
             CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
 
             if [ "$CHANGED_DIRS" = "[]" ] || [ -z "$CHANGED_DIRS" ]; then
               echo "projects=[]" >> $GITHUB_OUTPUT
             else
-              # Trim to "articles/detections/web" -> "web" instantly with jq
+              # Trim to "path/to/web" -> "web" instantly with jq
               PROJECTS=$(echo "$CHANGED_DIRS" | jq -c 'map(split("/") | .[2])')
               echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
             fi
@@ -77,6 +77,7 @@ jobs:
       contents: read
     strategy:
       fail-fast: false # Continue other parallel builds even if one project fails
+      max-parallel: 4
       matrix:
         project: ${{ fromJson(needs.detect-changes.outputs.projects) }}
 
@@ -91,10 +92,11 @@ jobs:
       - name: Find Target and Define Assets Path
         run: |
           # 1. First, search for the target
-          TARGET=$(find articles/detections/${{ matrix.project }} -maxdepth 2 \( -name "*.md" -o -name "*.slnx" -o -name "*.sln" \) | head -n 1)
+          FIND_PATH="articles/detections/${{ matrix.project }}"
+          TARGET=$(find "$FIND_PATH" -maxdepth 2 \( -name "*.slnx" -o -name "*.sln" -o -name "*.md" \) | head -n 1)
 
           if [ -z "$TARGET" ]; then
-            echo "::error::No .slnx, or .sln found in articles/detections/${{ matrix.project }}"
+            echo "::error::No .slnx, or .sln found in $FIND_PATH"
             exit 1
           fi
 
