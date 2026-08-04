@@ -10,6 +10,7 @@ on:
       - "./chapters/go/go.mod"
       - "./chapters/go/go.sum"
       - "./chapters/go/*.go"
+      - "./chapters/go/Dockerfile"
       - "./.github/workflows/chapter-2-2-cd.yaml"
   workflow_dispatch:
 
