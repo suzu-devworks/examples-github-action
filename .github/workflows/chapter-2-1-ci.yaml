@@ -35,6 +35,7 @@ jobs:
     steps:
       - name: チェックアウトする
         uses: actions/checkout@v7
+
       - name: Go の環境をセットアップする
         uses: actions/setup-go@v7
         with:
@@ -43,9 +44,12 @@ jobs:
       - name: フォーマットを実行する
         # フォーマット違反時にステップを失敗させる
         run: test -z "$(gofmt -l .)"
+
       - name: 静的解析を実行する
         run: go vet ./...
+
       - name: テストを実行する
         run: go test
+
       - name: ビルドを実行する
         run: go build .
