@@ -1,15 +1,16 @@
 # Chapter 2 プルリクエスト駆動でCIを実現する.
 ---
-name: Chapter 2 - CI
+name: Chapter 2 (1) - CI
 
 on:
   pull_request:
     branches:
       - main
     paths:
-      - "go.mod"
-      - "go.sum"
-      - "**.go"
+      - "./chapters/go/go.mod"
+      - "./chapters/go/go.sum"
+      - "./chapters/go/*.go"
+      - ".github/workflows/chapter-2-1-ci.yaml"
   workflow_dispatch:
 
 permissions: {}
@@ -17,19 +18,28 @@ defaults:
   run:
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     name: ci
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./chapters/go/
+
     steps:
       - name: チェックアウトする
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Go の環境をセットアップする
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
-          go-version: "1.23.1"
+          go-version: "1.26.5"
+          
       - name: フォーマットを実行する
         # フォーマット違反時にステップを失敗させる
         run: test -z "$(gofmt -l .)"

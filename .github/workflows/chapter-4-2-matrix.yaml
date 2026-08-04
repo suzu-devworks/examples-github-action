@@ -1,6 +1,6 @@
 # Chapter 4 matrix strategy によるジョブ実行の応用.
 ---
-name: Chapter 4 - Matrix strategy
+name: Chapter 4 (2) - Matrix strategy
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Ser up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
         with:

@@ -1,6 +1,6 @@
 # Chapter 3 キャッシュ活用によるCIの高速化.
 ---
-name: Chapter 3 - Cache
+name: Chapter 3 (4) - Cache
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23.1"
@@ -37,7 +37,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: build-start のキャッシュを再現
         uses: actions/cache@v4
         with:
@@ -55,7 +55,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#caching-packages-data
       - uses: actions/setup-node@v4
         with:
@@ -73,7 +73,7 @@ jobs:
       run:
         working-directory: ./packages/node
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v2
         with:
           version: 9
@@ -95,7 +95,7 @@ jobs:
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.x"

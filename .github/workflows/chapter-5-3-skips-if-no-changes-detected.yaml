@@ -24,7 +24,7 @@ jobs:
       backend: ${{ steps.changed_directory.outputs.backend }}
       renovate: ${{ steps.changed_directory.outputs.renovate }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           filter: blob:none # gitの履歴のみを取得する
           fetch-depth: 2 # ファイルの変更を取得するために必要
@@ -45,7 +45,7 @@ jobs:
       contents: read
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: echo "Frontend passes lint, tests, and build are listed here."
   backend:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
       contents: read
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: echo "Backend passes lint, tests, and build are listed here."
   renovate:
     runs-on: ubuntu-latest
@@ -65,5 +65,5 @@ jobs:
       contents: read
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: echo "Configuration file changes that pass validation are listed here."

@@ -3,20 +3,24 @@
 name: Articles - Changed detection sample
 
 on:
-  # push:
-  #   branches: [ "main" ]
-  #   paths:
-  #     - "src/**"
   pull_request:
     paths:
-      - "articles/detections/**"
+      # Since variables cannot be used in `on.paths`, this part must be hardcoded.
+      - "articles/changed-detenctions/**"
+      - ".github/workflows/articles-changed-detection.yaml"
   workflow_dispatch:
 
 permissions: {}
-
+defaults:
+  run:
+    shell: bash
+    
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  TARGET_BASE_DIR: "articles/changed-detenctions"
 
 jobs:
   detect-changes:
@@ -42,7 +46,7 @@ jobs:
           matrix: true
           dir_names: true
           dir_names_max_depth: 3 # path/to/xxx
-          files: articles/detections/**
+          files: ${{ env.TARGET_BASE_DIR }}/**
 
       # Finalize the array and pass it to the output
       - name: Set matrix output
@@ -50,7 +54,7 @@ jobs:
         run: |
           # For manual execution (workflow_dispatch), target all projects under path/to/
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            PROJECTS=$(ls -d articles/detections/*/ | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            PROJECTS=$(ls -d $TARGET_BASE_DIR/*/ | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
             echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
           else
             # json array returned from the plugin (e.g. ["path/to/AAA", "path/to/BBB"])
@@ -92,7 +96,7 @@ jobs:
       - name: Find Target and Define Assets Path
         run: |
           # 1. First, search for the target
-          FIND_PATH="articles/detections/${{ matrix.project }}"
+          FIND_PATH="$TARGET_BASE_DIR/${{ matrix.project }}"
           TARGET=$(find "$FIND_PATH" -maxdepth 2 \( -name "*.slnx" -o -name "*.sln" -o -name "*.md" \) | head -n 1)
 
           if [ -z "$TARGET" ]; then
@@ -120,7 +124,7 @@ jobs:
       
       - name: Run Test Assets Scripts (If exists)
         run: |
-          SCRIPT_PATH="articles/detections/${{ matrix.project }}/scripts/generate-test-assets.sh"
+          SCRIPT_PATH="$TARGET_BASE_DIR/${{ matrix.project }}/scripts/generate-test-assets.sh"
           if [ -f "$SCRIPT_PATH" ]; then
             echo "Found asset generation script. Running..."
             chmod +x "$SCRIPT_PATH"
