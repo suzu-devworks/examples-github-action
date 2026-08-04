@@ -1,21 +1,25 @@
 # Chapter 2 マージ駆動でCDを実現する.
 ---
-name: Chapter 2 - CD
+name: Chapter 2 (2) - CD
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'go.mod'
-      - 'go.sum'
-      - '**.go'
+      - "./chapters/go/go.mod"
+      - "./chapters/go/go.sum"
+      - "./chapters/go/*.go"
   workflow_dispatch:
 
 permissions: {}
 defaults:
   run:
     shell: bash
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   cd:
@@ -25,19 +29,19 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      # - name: Container registory に認証する
-      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - uses: actions/checkout@v7
+      - name: Container registory に認証する
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Container registory に認証する
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Docker ビルドする
-      #   run: docker build -t ghcr.io/${{ github.repository }}:latest .
-      # - name: Docker イメージをプッシュする
-      #   run: docker push ghcr.io/${{ github.repository }}:latest
+      - name: Docker ビルドする
+        run: docker build -t ghcr.io/${{ github.repository }}:latest .
+      - name: Docker イメージをプッシュする
+        run: docker push ghcr.io/${{ github.repository }}:latest
       - name: Docker をビルドおよびプッシュする
         uses: docker/build-push-action@v5
         with:

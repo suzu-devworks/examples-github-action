@@ -1,6 +1,6 @@
 # Chapter 4 ジョブによるコンテナの利用.
 ---
-name: Chapter 4 - Containers
+name: Chapter 4 (1) - Containers
 
 on:
   pull_request:
@@ -37,7 +37,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Connect postgres
         # ERROR: column d.daticulocale does not exist
         # This occurs when running "psql \l" from a v16 client to a v17 server.

@@ -1,0 +1,63 @@
+# Chapter 1 Hello World、ワークフローの定義ファイルの書き方.
+---
+name: Chapter 1 - Hello World (Go Test)
+
+on:
+  # Events
+  # - https://docs.github.com/ja/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#issue_comment
+
+  # コミットのプッシュでワークフローをトリガーする設定
+  push:
+    branches:
+      - main
+    paths:
+      - "./chapters/go/go.mod"
+      - "./chapters/go/go.sum"
+      - "./chapters/go/*.go"    
+      - ".github/workflows/chapter-1-go.yaml"
+
+  # issusのコメントでワークフローをトリガーする設定
+  issue_comment:
+    types: [created, deleted]
+
+  # 指定した時間にワークフローをトリガーする設定 
+  # schedule:
+  #   - cron: "0 9 1 * *" # At 09:00 on day-of-month 1.
+
+  # 手動でワークフローをトリガーする設定
+  workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# job は同じランナーで実行されるステップの集合体です。
+jobs:
+  build:
+    # ランナーの指定
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ./chapters/go/
+
+    # steps は job の中で実行されるタスクの集合体です。 
+    steps:
+      # 複雑な処理や頻繁に使用する処理は、アクションを定義して使用することができます。
+      - uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.5"
+          cache: false
+
+      - name: Build
+        run: go build -v .

@@ -1,6 +1,6 @@
 # Chapter 3 ワークフロー内で利用可能な値（コンテキスト）.
 ---
-name: Chapter 3 - actions/context
+name: Chapter 3 (1) - actions/context
 
 on:
   pull_request:
@@ -43,7 +43,7 @@ jobs:
           RUNNER_CONTEXT: ${{ toJson(runner) }}
         run: echo "$RUNNER_CONTEXT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         id: checkout
       - name: actions/checkout のステータスを表示
         run: echo "${{ steps.checkout.conclusion }}"

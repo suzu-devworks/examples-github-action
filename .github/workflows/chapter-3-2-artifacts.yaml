@@ -1,6 +1,6 @@
 # Chapter 3 ジョブの成果物の保存、次のジョブへの受け渡し.
 ---
-name: Chapter 3 - actions/artifacts
+name: Chapter 3 (2) - actions/artifacts
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: ビルド（ダミー）
         run: |
           date > dummy.txt
@@ -37,7 +37,7 @@ jobs:
     permissions:
       contents: write # gh release upload に必要
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: 成果物のダウンロード
         uses: actions/download-artifact@v4
         with:

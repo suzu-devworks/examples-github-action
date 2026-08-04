@@ -1,5 +1,6 @@
 # Chapter 3 GitHub Actions の権限について.
-name: Chapter 3 - Permissions
+---
+name: Chapter 3 (6) - Permissions
 
 on:
   pull_request:
@@ -16,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Github CLI
         run: gh auth status
         env:
