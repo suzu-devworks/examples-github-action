@@ -31,3 +31,5 @@ node_modules/
 obj/
 bin/
 .nuget/
+**/dotnet/runfile-discovery/
+**/cache.staging.json
