@@ -3,10 +3,21 @@
 name: Chapter 3 (3) - Control Flow
 
 on:
-  # pull_request:
   workflow_dispatch:
+    inputs:
+      force_error:
+        description: '強制的にエラーにしますか？'
+        type: boolean
+        default: true # デフォルトでエラーにする設定
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -14,10 +25,16 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: ビルド（失敗)
+      - name: ビルド処理
         id: fail_step
-        run: exit 1
-
+        run: |
+          if [ "${{ inputs.force_error }}" = "true" ]; then
+            echo "テスト用に強制エラーを起こします..."
+            exit 1
+          else
+            echo "ビルド処理が正常に成功しました！"
+          fi
+          
       - name: 失敗時の処理
         if: ${{ failure() && steps.fail_step.outcome == 'failure' }}
         run: echo "${{ steps.fail_step.outcome }}"
@@ -30,7 +47,32 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Slack通知
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      # - name: Slack通知
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      
+      # $GITHUB_STEP_SUMMARY とは、GitHub Actionsを実行したあとのトップ画面（Summary画面）に、
+      # 文字やグラフを自由に書き込めるGitHub専用のファイルパス（環境変数）です
+
+      # 【成功（緑）のときの通知】
+      - name: Notify on Success
+        if: ${{ needs.build.result == 'success' }}
+        run: |
+          echo "::notice::【手動テスト】ワークフローが正常に成功しました！"
+          
+          echo "# 🟢 テスト成功通知" >> $GITHUB_STEP_SUMMARY
+          echo "手動実行されたジョブが正常に完了しました。" >> $GITHUB_STEP_SUMMARY
+          echo "- **ステータス:** SUCCESS" >> $GITHUB_STEP_SUMMARY
+          echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+      # 【失敗（赤）のときの通知】
+      - name: Notify on Failure
+        if: ${{ needs.build.result == 'failure' }}
+        run: |
+          echo "::error::【手動テスト】ワークフローが失敗しました。確認してください！"
+          
+          echo "# ❌ テストエラー通知" >> $GITHUB_STEP_SUMMARY
+          echo "手動実行されたジョブでエラーを検知しました。" >> $GITHUB_STEP_SUMMARY
+          echo "- **ステータス:** FAILURE" >> $GITHUB_STEP_SUMMARY
+          echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
