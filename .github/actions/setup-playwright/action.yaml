@@ -20,7 +20,7 @@ runs:
         echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_OUTPUT
 
     - name: Cache Playwright with deps
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ steps.version.outputs.PLAYWRIGHT_VERSION }}

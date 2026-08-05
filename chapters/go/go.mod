@@ -1,6 +1,6 @@
 module github.com/suzu-devworks/examples-github-action/chapters/go
 
-go 1.26.5
+go 1.25.12
 
 require github.com/gin-gonic/gin v1.12.0
 

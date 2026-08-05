@@ -9,6 +9,13 @@ on:
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-start:
@@ -23,11 +30,14 @@ jobs:
     needs: build-start
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./chapters/go/
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version: "1.23.1"
+          go-version: "1.26.5"
           # cache: true (default)
       - run: go install
 
@@ -36,16 +46,19 @@ jobs:
     needs: build-go
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./chapters/go/
     steps:
       - uses: actions/checkout@v7
       - name: build-start のキャッシュを再現
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/go/pkg/mod
           key: cache-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version: "1.23.1"
+          go-version: "1.26.5"
           cache: false
       - run: go install
 
@@ -54,12 +67,15 @@ jobs:
     needs: build-start
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./chapters/node/
     steps:
       - uses: actions/checkout@v7
       # https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#caching-packages-data
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "26"
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
       - run: yarn install --frozen-lockfile
@@ -71,15 +87,15 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./packages/node
+        working-directory: ./chapters/node/
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '26'
           cache: 'pnpm'
           cache-dependency-path: "**/pnpm-lock.yaml"
       - run: pnpm install
@@ -91,14 +107,14 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./packages/dotnet
+        working-directory: ./chapters/dotnet
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: "8.x"
+          dotnet-version: "10.x"
           cache: true
           cache-dependency-path: "**/packages.lock.json"
       - run: dotnet restore --locked-mode
