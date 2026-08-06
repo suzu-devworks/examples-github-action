@@ -5,7 +5,7 @@ name: Chapter 3 (4) - Cache
 on:
   pull_request:
     paths:
-      - ".github/workflows/cache.yaml"
+      - '.github/workflows/cache.yaml'
   workflow_dispatch:
 
 permissions: {}
@@ -33,14 +33,14 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: "./chapters/go/"
+        working-directory: './chapters/go/'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.26.5"
+          go-version: '1.26.5'
           # cache: true (default)
-          cache-dependency-path: "./chapters/go/go.sum"
+          cache-dependency-path: '**/go.sum'
       - run: go install
 
   build-go-cache:
@@ -51,7 +51,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./chapters/go/
+        working-directory: './chapters/go/'
     steps:
       - uses: actions/checkout@v7
       - name: build-start のキャッシュを再現
@@ -61,7 +61,7 @@ jobs:
           key: cache-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.26.5"
+          go-version: '1.26.5'
           cache: false
       - run: go install
 
@@ -73,15 +73,15 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./chapters/node/
+        working-directory: './chapters/node/'
     steps:
       - uses: actions/checkout@v7
       # https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#caching-packages-data
       - uses: actions/setup-node@v7
         with:
-          node-version: "26"
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
+          node-version: '26'
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
       - run: yarn install --frozen-lockfile
 
   build-node-pnpm:
@@ -92,7 +92,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./chapters/node/
+        working-directory: './chapters/node/'
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -102,7 +102,7 @@ jobs:
         with:
           node-version: '26'
           cache: 'pnpm'
-          cache-dependency-path: "**/pnpm-lock.yaml"
+          cache-dependency-path: '**/pnpm-lock.yaml'
       - run: pnpm install
 
   build-dotnet:
@@ -120,9 +120,9 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: "10.x"
+          dotnet-version: '10.x'
           cache: true
-          cache-dependency-path: "**/packages.lock.json"
+          cache-dependency-path: '**/packages.lock.json'
       - run: dotnet restore --locked-mode
 
   build-join:
