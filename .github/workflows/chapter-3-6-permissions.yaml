@@ -5,7 +5,7 @@ name: Chapter 3 (6) - Permissions
 on:
   pull_request:
     paths:
-      - ".github/workflows/permissions.yaml"
+      - '.github/workflows/permissions.yaml'
   workflow_dispatch:
 
 permissions: {}
@@ -26,7 +26,6 @@ jobs:
         env:
           VARIABLES_VALUE: ${{ vars.USER_VALUE }}
           SECRETS_VALUE: ${{ secrets.USER_VALUE }}
-        run: | 
+        run: |
           echo "$VARIABLES_VALUE"
           echo "$SECRETS_VALUE"
-

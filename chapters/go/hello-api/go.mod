@@ -1,4 +1,4 @@
-module github.com/suzu-devworks/examples-github-action/chapters/go/sample
+module github.com/suzu-devworks/examples-github-action/chapters/go/hello-api
 
 go 1.25.12
 

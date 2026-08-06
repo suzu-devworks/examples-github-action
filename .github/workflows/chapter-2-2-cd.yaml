@@ -3,22 +3,20 @@
 name: Chapter 2 (2) - CD
 
 on:
+  # main への push つまりマージが行われたときに実行する
   push:
     branches:
       - main
     paths:
-      - "./chapters/go/go.mod"
-      - "./chapters/go/go.sum"
-      - "./chapters/go/*.go"
-      - "./chapters/go/Dockerfile"
-      - "./.github/workflows/chapter-2-2-cd.yaml"
+      - './chapters/go/hello-api/**'
+      - './.github/workflows/chapter-2-2-cd.yaml'
   workflow_dispatch:
 
 permissions: {}
 defaults:
   run:
     shell: bash
-    
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,13 +25,14 @@ jobs:
   cd:
     name: cd
     runs-on: ubuntu-latest
+    # GitHub Container Registry にイメージを push するための権限を付与する
     permissions:
       contents: read
       packages: write
     defaults:
       run:
-        working-directory: ./chapters/go/
-        
+        working-directory: './chapters/go/hello-api/'
+
     steps:
       - uses: actions/checkout@v7
 
