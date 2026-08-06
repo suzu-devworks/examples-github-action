@@ -5,7 +5,7 @@ name: Chapter 3 (4) - Cache
 on:
   pull_request:
     paths:
-      - '.github/workflows/cache.yaml'
+      - '.github/workflows/chapter-3-4-cache.yaml'
   workflow_dispatch:
 
 permissions: {}
@@ -17,6 +17,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# GitHub Actions では、ジョブの実行に必要な依存関係をキャッシュすることで、CIの高速化が可能です。
+# とくに、Go、Node.js、.NET などの言語では、依存関係のキャッシュがサポートされています。
+
 jobs:
   build-start:
     runs-on: ubuntu-latest
@@ -26,6 +29,8 @@ jobs:
       - run: echo 'start!'
 
   build-go:
+    # Go の依存関係のキャッシュは、actions/setup-go でサポートされています。
+    # が、キャッシュキーの指定ができないなど柔軟性が低く、キャッシュのヒット率が低い場合があります。
     runs-on: ubuntu-latest
     needs: build-start
     timeout-minutes: 5
@@ -36,6 +41,10 @@ jobs:
         working-directory: './chapters/go/hello-api/'
     steps:
       - uses: actions/checkout@v7
+      # https://github.com/actions/setup-go#caching-dependency-files-and-build-outputs
+      # const primaryKey = `setup-go-${platform}-${arch}-${linuxVersion}go-${versionSpec}-${fileHash}`;
+      # fileHash のデフォルトは `go.mod` のハッシュ値だそうで 
+      # `cache-dependency-path`を指定すると `go.sum` のハッシュ値を利用することができます。
       - uses: actions/setup-go@v7
         with:
           go-version: '1.26'
@@ -44,6 +53,7 @@ jobs:
       - run: go mod download
 
   build-go-cache:
+    # 依存関係のキャッシュは、actions/cache を利用して自前で管理することが多い様です。
     runs-on: ubuntu-latest
     needs: build-go
     timeout-minutes: 5
@@ -54,18 +64,29 @@ jobs:
         working-directory: './chapters/go/hello-api/'
     steps:
       - uses: actions/checkout@v7
-      - name: build-start のキャッシュを再現
-        uses: actions/cache@v6
-        with:
-          path: ~/go/pkg/mod
-          key: cache-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
       - uses: actions/setup-go@v7
         with:
           go-version: '1.26'
-          cache: false
+          cache: false # actions/setup-go のキャッシュは無効化
+      # https://github.com/actions/cache#caching-strategies
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          # キーを指定することで、キャッシュ範囲を制御できます。
+          key: |
+            ${{ runner.os }}-go-cache-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
+          # キーに `github.run_id` 含めたため実行単位が変わるとキャッシュがヒットしなくなるため
+          # restore-keys を指定して、キャッシュのヒット率を上げます。
+          restore-keys: |
+            ${{ runner.os }}-go-cache-${{ hashFiles('**/go.sum') }}-
+      # 依存関係のキャッシュがヒットした場合、go mod download はスキップされます。
       - run: go mod download
+      # キャッシュのセーブは、actions/cache のキャッシュキーが変化した場合にのみ行われます。
 
   build-node:
+    # npm での依存関係のキャッシュは、actions/setup-node でサポートされています。
     runs-on: ubuntu-latest
     needs: build-start
     timeout-minutes: 5
@@ -73,10 +94,31 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: './chapters/node/'
+        working-directory: './chapters/node/calc/'
     steps:
       - uses: actions/checkout@v7
       # https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#caching-packages-data
+      # const keyPrefix = `node-cache-${platform}-${arch}-${packageManager}`;
+      # const primaryKey = `${keyPrefix}-${fileHash}`;
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+
+  build-node-yarn:
+    # yarn での依存関係のキャッシュも、actions/setup-node でサポートされています。
+    runs-on: ubuntu-latest
+    needs: build-node
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: './chapters/node/calc-yarn/'
+    steps:
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '26'
@@ -85,6 +127,7 @@ jobs:
       - run: yarn install --frozen-lockfile
 
   build-node-pnpm:
+    # pnpm での依存関係のキャッシュも、actions/setup-node でサポートされています。
     runs-on: ubuntu-latest
     needs: build-node
     timeout-minutes: 5
@@ -92,12 +135,14 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: './chapters/node/'
+        working-directory: './chapters/node/calc-pnpm/'
     steps:
       - uses: actions/checkout@v7
+      # https://github.com/pnpm/action-setup#setup-pnpm
+      # pnpm/action-setup 自体にもキャッシュ機能をサポートしているようです（デフォルト:false）
       - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: '11'
       - uses: actions/setup-node@v7
         with:
           node-version: '26'
@@ -106,6 +151,9 @@ jobs:
       - run: pnpm install
 
   build-dotnet:
+    # .NET での依存関係のキャッシュは、actions/setup-dotnet でサポートされています。
+    # ただし `packages.lock.json`を出力する必要があるが、これを出力するとコンフリクトが発生しやすくなるため、
+    # あまり利用されていないようです。代わりに、actions/cache を利用して自前で管理することが多い様です。
     runs-on: ubuntu-latest
     needs: build-start
     timeout-minutes: 5
@@ -113,11 +161,13 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: ./chapters/dotnet
+        working-directory: './chapters/dotnet/HelloWorld/'
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - uses: actions/checkout@v7
+      # https://github.com/actions/setup-dotnet#caching-nuget-packages
+      # const primaryKey = `dotnet-cache-${platform}-${fileHash}`;
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.x'
@@ -125,9 +175,35 @@ jobs:
           cache-dependency-path: '**/packages.lock.json'
       - run: dotnet restore --locked-mode
 
+  build-dotnet-cache:
+    runs-on: ubuntu-latest
+    needs: build-dotnet
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: './chapters/dotnet/HelloWorld/'
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: |
+            ${{ runner.os }}-nuget-cache-${{ hashFiles('**/packages.lock.json') }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-cache-
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.x'
+          cache: false
+      - run: dotnet restore --use-lock-file
+
   build-join:
     runs-on: ubuntu-latest
-    needs: [build-go-cache, build-node-pnpm, build-dotnet]
+    needs: [build-go-cache, build-node-yarn, build-node-pnpm, build-dotnet-cache]
     permissions:
       contents: read
     steps:

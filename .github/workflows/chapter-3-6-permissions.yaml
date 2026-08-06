@@ -5,27 +5,47 @@ name: Chapter 3 (6) - Permissions
 on:
   pull_request:
     paths:
-      - '.github/workflows/permissions.yaml'
+      - '.github/workflows/chapter-3-6-permissions.yaml'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# GitHub Actions では、特定のリソースを扱うための権限を GITHUB_TOKEN で扱うことができます。
+# GITHUB_TOKEN はジョブの開始時に自動的に作成されるトークンで、リポジトリの権限を持っています。
+# GITHUB_TOKEN の権限を変更したい場合は、permissions キーを使用して設定することができます。
 
 jobs:
   use_github_token:
     runs-on: ubuntu-latest
+    # https://docs.github.com/ja/actions/reference/workflows-and-actions/workflow-syntax#defining-access-for-the-github_token-scopes
     permissions:
       contents: read
+      issues: write   # issue を作成するために必要な権限
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Github CLI
+      - uses: actions/checkout@v7
+      - name: GitHub CLI auth status
         run: gh auth status
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Show variables.
+
+      # GitHub内へIssueを作成して通知
+      - name: Create Issue 
         env:
-          VARIABLES_VALUE: ${{ vars.USER_VALUE }}
-          SECRETS_VALUE: ${{ secrets.USER_VALUE }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "$VARIABLES_VALUE"
-          echo "$SECRETS_VALUE"
+          gh issue create \
+            --title "I created an issue from GitHub Actions." \
+            --body "手動実行されたワークフローでIssueを発行しました。
+            
+            - **ステータス:** @${{ job.status }}
+            - **実行者:** @${{ github.actor }}
+            - **ログ確認URL:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --assignee "${{ github.actor }}" # 実行した本人を担当者に設定

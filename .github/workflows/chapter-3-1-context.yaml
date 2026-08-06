@@ -1,14 +1,23 @@
 # Chapter 3 ワークフロー内で利用可能な値（コンテキスト）.
 ---
-name: Chapter 3 (1) - actions/context
+name: Chapter 3 (1) - Context
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/context.yaml"
+      - '.github/workflows/chapter-3-1-context.yaml'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ワークフロー内では GitHub Actions に関連するさまざまな情報へアクセスするための値（コンテキスト）が利用できます。
 
 jobs:
   display:
@@ -16,17 +25,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
     steps:
       - name: プルリクエストの情報を表示
         env:
-          GITHUB_HEAD_REF: "${{ github.head_ref }}"
+          GITHUB_HEAD_REF: '${{ github.head_ref }}'
         run: |
           echo "プルリクエストのブランチ名: $GITHUB_HEAD_REF"
           echo "プルリクエストの番号: ${{ github.event.pull_request.number }}"
           echo "プルリクエストの作成者": ${{ github.event.pull_request.user.login }}
 
-      # - see: https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
       - name: github コンテキストの表示
+        # github コンテキストには主に、GitHub Actions の実行に関する情報が格納されています
         # Be aware that it contains sensitive information such as github.token!
         env:
           GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
@@ -39,14 +49,32 @@ jobs:
           echo "github.event: $GITHUB_EVENT_CONTEXT"
 
       - name: runner コンテキストの表示
+        # runner コンテキストには主に、GitHub Actions の実行環境に関する情報が格納されています
         env:
           RUNNER_CONTEXT: ${{ toJson(runner) }}
         run: echo "$RUNNER_CONTEXT"
 
       - uses: actions/checkout@v7
+        # steps コンテキストを利用するには、id を指定する必要があります
         id: checkout
-      - name: actions/checkout のステータスを表示
-        run: echo "${{ steps.checkout.conclusion }}"
 
-      - name: job のステータスを表示
-        run: echo "${{ job.status }}"
+      - name: steps コンテキストの表示
+        # steps コンテキストには、同じジョブ内で実行されたステップの情報が格納されています
+        run: |
+          # actions/checkout のステータスを表示
+          echo "${{ steps.checkout.conclusion }}"
+
+      - name: job コンテキストの表示
+        # job コンテキストには、同じジョブ内で実行されたステップの情報が格納されています
+        run: |
+          echo "${{ job.status }}"
+          echo "${{ toJson(job) }}"
+
+      - name: その他のコンテキストの表示
+        # - see: https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+        run: |
+          echo "${{ toJson(matrix) }}"
+          echo "${{ toJson(needs) }}"
+          echo "${{ toJson(runner.os) }}"
+          echo "${{ toJson(env) }}"
+          echo "${{ toJson(inputs) }}"
