@@ -1,6 +1,6 @@
 # Chapter 1 Hello World、ワークフローの定義ファイルの書き方.
 ---
-name: Chapter 1 - Hello World (Go Test)
+name: Chapter 1 - Hello World
 
 on:
   # Events
@@ -12,7 +12,7 @@ on:
       - main
     paths:
       - './chapters/go/hello/**'
-      - '.github/workflows/chapter-1-go.yaml'
+      - '.github/workflows/chapter-1-hello.yaml'
 
   # issusのコメントでワークフローをトリガーする設定
   issue_comment:
