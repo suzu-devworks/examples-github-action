@@ -1,11 +1,11 @@
 # Chapter 3 ジョブの成果物の保存、次のジョブへの受け渡し.
 ---
-name: Chapter 3 (2) - actions/artifacts
+name: Chapter 3 (2) - Artiafacts
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/artifacts.yaml"
+      - '.github/workflows/chapter-3-2-artifacts.yaml'
   workflow_dispatch:
 
 permissions: {}
@@ -13,36 +13,50 @@ defaults:
   run:
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ワークフロー内では、ジョブの成果物（アーティファクト）を保存し、
+# あとから手元にダウンロードしたり、次のジョブに受け渡して再利用することができます。
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
     steps:
       - uses: actions/checkout@v7
+
       - name: ビルド（ダミー）
         run: |
           date > dummy.txt
           mkdir -p output
           zip output/artifact.zip dummy.txt
+
       - name: 成果物のアップロード
-        uses: actions/upload-artifact@v4
+        # デフォルトで 90 日間保存されます。
+        uses: actions/upload-artifact@v7
         with:
           name: build
-          path: output/
+          path: 'output/'
 
   deploy:
     runs-on: ubuntu-latest
     needs: build # buildジョブ後に実行
     permissions:
       contents: write # gh release upload に必要
+
     steps:
       - uses: actions/checkout@v7
+
       - name: 成果物のダウンロード
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build
-          path: output/
+          path: 'output/'
+
       - name: GitHub Release へのデプロイ
         run: gh release upload v1.0.0 output/artifact.zip --clobber
         env:

@@ -17,17 +17,28 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Go workspace file
+## Go workspace file
 go.work
 go.work.sum
 
-# env file
+## env file
 .env
 
-# add node files.
+## add node files.
 node_modules/
+
+## add package manager files.
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+.pnpm-store/
 
 # add dotnet files.
 obj/
 bin/
 .nuget/
+**/dotnet/runfile-discovery/
+**/cache.staging.json

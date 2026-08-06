@@ -8,8 +8,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello World!")
-
 	router := gin.Default()
 	router.GET("/hello/:name", func(c *gin.Context) {
 		name := c.Param("name")

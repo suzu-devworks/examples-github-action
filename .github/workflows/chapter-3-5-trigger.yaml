@@ -1,29 +1,33 @@
 # Chapter 3 さまざまなワークフロートリガー
 ---
-name: Chapter 3 (5) - Work flow trigger
+name: Chapter 3 (5) - Work flow triggers
 
 on:
   # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows
   pull_request:
-    branches:
-      - "releases/**"
+    # 特定のファイルが変更されたときにトリガーする
+    paths:
+      - '.github/workflows/chapter-3-5-trigger.yaml'
   push:
+    # 特定のブランチに push したときにトリガーする
     branches:
-      - "releases/**"
-
+      - 'releases/**'
+  # issue を作成したとき、ラベルをつけた時にトリガーする
   issues:
     types: [opened, labeled]
-  schedule:
-    - cron: "0 16 2 * *"
+  # `At 16:00 on day-of-month 2.` => 毎月２日のAM 1:00にトリガーする（日本時間）
+  # schedule:
+  #   - cron: '0 16 2 * *'
+  # 手動トリガーとフィルターを設定
   workflow_dispatch:
     inputs:
       deploy_version:
-        description: "デプロイするバージョン"
+        description: 'デプロイするバージョン'
         required: true
       deploy_target:
-        description: "デプロイ先環境"
+        description: 'デプロイ先環境'
         required: true
-        default: "dev"
+        default: 'dev'
         type: choice
         options:
           - dev
@@ -31,6 +35,15 @@ on:
           - prod
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# GitHub Actions では、ワークフローのトリガーを柔軟に設定することができます。
 
 jobs:
   build:
