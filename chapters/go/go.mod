@@ -1,4 +1,4 @@
-module github.com/suzu-devworks/examples-github-action/chapters/go
+module github.com/suzu-devworks/examples-github-action/chapters/go/sample
 
 go 1.25.12
 

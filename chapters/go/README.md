@@ -5,7 +5,7 @@
 最初のモジュール作成
 
 ```bash
-go mod init github.com/suzu-devworks/examples-github-action/chapters/go
+go mod init github.com/suzu-devworks/examples-github-action/chapters/go/sample
 go get github.com/gin-gonic/gin
 ```
 
