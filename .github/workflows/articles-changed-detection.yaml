@@ -54,18 +54,19 @@ jobs:
         run: |
           # For manual execution (workflow_dispatch), target all projects under path/to/
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            PROJECTS=$(ls -d $TARGET_BASE_DIR/*/ | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
-            echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+            PROJECTS=$(find "$TARGET_BASE_DIR" -mindepth 1 -maxdepth 1 -type d \
+              | cut -d'/' -f3 | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "projects=$PROJECTS" >> "$GITHUB_OUTPUT"
           else
             # json array returned from the plugin (e.g. ["path/to/AAA", "path/to/BBB"])
             CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
 
             if [ "$CHANGED_DIRS" = "[]" ] || [ -z "$CHANGED_DIRS" ]; then
-              echo "projects=[]" >> $GITHUB_OUTPUT
+              echo "projects=[]" >> "$GITHUB_OUTPUT"
             else
               # Trim to "path/to/web" -> "web" instantly with jq
               PROJECTS=$(echo "$CHANGED_DIRS" | jq -c 'map(split("/") | .[2])')
-              echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+              echo "projects=$PROJECTS" >> "$GITHUB_OUTPUT"
             fi
           fi
 
@@ -112,8 +113,8 @@ jobs:
           PROJECT_ASSETS_PATH="${{ github.workspace }}/$TARGET_DIR/assets"
 
           # Save each to environment variables
-          echo "TARGET_PATH=$TARGET" >> $GITHUB_ENV
-          echo "TEST_ASSETS_PATH=$PROJECT_ASSETS_PATH" >> $GITHUB_ENV
+          echo "TARGET_PATH=$TARGET" >> "$GITHUB_ENV"
+          echo "TEST_ASSETS_PATH=$PROJECT_ASSETS_PATH" >> "$GITHUB_ENV"
 
           echo "🎯 Target detected: $TARGET"
           echo "📂 Test assets will be generated at: $PROJECT_ASSETS_PATH"

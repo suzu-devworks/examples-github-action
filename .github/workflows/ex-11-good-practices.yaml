@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
   # 5. 不要なイベントで起動しないようにフィルタリングする
   pull_request:
-    paths: 
-      - ".github/workflows/ex-11-good-practices.yaml"
+    paths:
+      - '.github/workflows/ex-11-good-practices.yaml'
 
 # ワークフローレベルでパーミッションをすべて無効化
 permissions: {}
@@ -47,4 +47,4 @@ jobs:
       - name: Run actionlint
         run: |
           set -x
-          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:1.7.3
+          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:1.7.12
