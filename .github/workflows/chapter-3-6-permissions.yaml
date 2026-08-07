@@ -30,7 +30,7 @@ jobs:
       issues: write   # issue を作成するために必要な権限
 
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - name: GitHub CLI auth status
         run: gh auth status
         env:

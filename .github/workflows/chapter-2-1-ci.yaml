@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: チェックアウトする
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Go の環境をセットアップする
         uses: actions/setup-go@v7

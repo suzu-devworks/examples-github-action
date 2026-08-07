@@ -54,7 +54,7 @@ jobs:
           RUNNER_CONTEXT: ${{ toJson(runner) }}
         run: echo "$RUNNER_CONTEXT"
 
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         # steps コンテキストを利用するには、id を指定する必要があります
         id: checkout
 

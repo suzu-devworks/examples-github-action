@@ -49,7 +49,7 @@ jobs:
     # steps は job の中で実行されるタスクの集合体です。
     steps:
       # 複雑な処理や頻繁に使用する処理は、アクションを定義して使用することができます。
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
 
       - name: Set up Go
         uses: actions/setup-go@v7

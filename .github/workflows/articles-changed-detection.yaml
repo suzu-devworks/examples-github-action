@@ -32,7 +32,7 @@ jobs:
       projects: ${{ steps.set-matrix.outputs.projects }}
 
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           # Get the entire history for difference detection
           fetch-depth: 0
@@ -86,7 +86,7 @@ jobs:
         project: ${{ fromJson(needs.detect-changes.outputs.projects) }}
 
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - name: Log Target Project Info
         run: |
           echo "=========================================================="
