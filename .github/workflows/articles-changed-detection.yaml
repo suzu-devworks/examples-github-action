@@ -1,4 +1,4 @@
-# articles-changed-detection.yaml - 変更を自動検知しプロジェクトごとに並列実行するテスト
+# 変更を自動検知しプロジェクトごとに並列実行するテスト
 ---
 name: Articles - Changed detection sample
 

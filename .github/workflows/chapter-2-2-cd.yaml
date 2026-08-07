@@ -25,6 +25,7 @@ jobs:
   cd:
     name: cd
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     # GitHub Container Registry にイメージを push するための権限を付与する
     permissions:
       contents: read
