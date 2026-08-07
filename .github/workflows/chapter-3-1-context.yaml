@@ -53,7 +53,7 @@ jobs:
         env:
           RUNNER_CONTEXT: ${{ toJson(runner) }}
         run: |
-          echo "runner: ${{ $RUNNER_CONTEXT }}"
+          echo "runner: $RUNNER_CONTEXT"
 
       - uses: actions/checkout@v7
         # steps コンテキストを利用するには、id を指定する必要があります
@@ -71,7 +71,7 @@ jobs:
           JOB_CONTEXT: ${{ toJson(job) }}
         run: |
           echo "job.status: ${{ job.status }}"
-          echo "job: ${{ $JOB_CONTEXT }}"
+          echo "job: $JOB_CONTEXT"
 
       - name: その他のコンテキストの表示
         # - see: https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
@@ -81,7 +81,7 @@ jobs:
           ENV_CONTEXT: ${{ toJson(env) }}
           INPUTS_CONTEXT: ${{ toJson(inputs) }}
         run: |
-          echo "matrix: ${{ $MATRIX_CONTEXT }}"
-          echo "needs: ${{ $NEEDS_CONTEXT }}"
-          echo "env: ${{ $ENV_CONTEXT }}"
-          echo "inputs: ${{ $INPUTS_CONTEXT }}"
+          echo "matrix: $MATRIX_CONTEXT"
+          echo "needs: $NEEDS_CONTEXT"
+          echo "env: $ENV_CONTEXT"
+          echo "inputs: $INPUTS_CONTEXT"

@@ -1,0 +1,142 @@
+# マルチプラットフォームのDockerイメージをビルドしてGitHub Container Registryにプッシュするワークフロー
+---
+name: Articles - Build and push multi-platform image
+
+on:
+  pull_request:
+    paths:
+      - 'chapters/go/hello-api/**'
+      - '.github/workflows/articles-docker-multi-platform.yaml'
+  workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm # arm64 runner
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
+
+      # https://github.com/marketplace/actions/build-and-push-docker-images
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      # QEMUは遅いので昨今は、arm64のRunnerを使うのが主流になってきている。
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # GitHub Packages (GHCR) に latest タグで複数回プッシュすると
+      # 後から走ったジョブが前のイメージのメタデータを破壊・上書きするのを防ぐ
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: './chapters/go/hello-api/'
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: '/tmp/digests/*'
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    name: Merge and push manifest list
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v7
+        with:
+          path: '/tmp/digests'
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          # 1. 最初に空の配列を定義
+          IMAGES=()
+
+          # 2. ループを回して配列に1つずつ安全に格納
+          for file in *; do
+            IMAGES+=("ghcr.io/suzu-devworks/examples-github-action@sha256:$file")
+          done
+
+          docker buildx imagetools create --tag "${{ env.IMAGE_NAME }}:latest" "${IMAGES[@]}"
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:latest
