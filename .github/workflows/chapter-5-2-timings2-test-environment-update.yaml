@@ -1,17 +1,21 @@
 # Chapter 5 プルリクエストが更新されたときに動作確認環境へアプリケーションを再デプロイ.
 ---
-name: Chapter 5 - Update application for test environment
-run-name: "Update application for test environment: ${{ github.event.pull_request.number }}"
+name: Chapter 5 (2) - 2. Update application for test environment
+run-name: 'Update application for test environment: ${{ github.event.pull_request.number }}'
 
 on:
   pull_request:
-    types: [ synchronize ]
+    types: [synchronize]
   workflow_dispatch:
 
 permissions: {}
 defaults:
   run:
     shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   update:

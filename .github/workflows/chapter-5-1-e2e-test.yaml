@@ -1,22 +1,27 @@
-# Chapter 5 再利用可能なメンテナンス性を考慮したワークフロー.
+# Chapter 5 メンテナンス性を考慮したワークフロー.
 ---
-name: Chapter 5 - E2E test (Call)
+name: Chapter 5 (1) - Make the workflow DRY (E2E Tests).
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/e2e-test.yaml'
-      - '.github/workflows/reusable-e2e-test.yaml'
+      - '.github/workflows/chapter-5-1-e2e-test.yaml'
+      - '.github/workflows/reusables/reusable-e2e-test.yaml'
       - '.github/actions/setup-playwright/action.yaml'
-      - 'packages/e2e/**'
+      - 'chapters/e2e/**'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
-    permissions:
-      contents: read
-    uses: ./.github/workflows/chapter-5-1-reusable-e2e-test.yaml
+    uses: ./.github/workflows/reusables/reusable-e2e-test.yaml
     with:
-      working-directory: 'packages/e2e'
+      working-directory: './chapters/e2e'
