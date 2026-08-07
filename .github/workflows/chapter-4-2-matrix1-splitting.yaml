@@ -1,6 +1,6 @@
 # Chapter 4 ユースケース 1. テストの分割.
 ---
-name: Chapter 4 (2) - Use Case 1. Test Splitting
+name: Chapter 4 (2) - 1. Test Splitting
 
 on:
   pull_request:
