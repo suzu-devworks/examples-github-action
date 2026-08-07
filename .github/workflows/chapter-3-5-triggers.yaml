@@ -7,7 +7,7 @@ on:
   pull_request:
     # 特定のファイルが変更されたときにトリガーする
     paths:
-      - '.github/workflows/chapter-3-5-trigger.yaml'
+      - '.github/workflows/chapter-3-5-triggers.yaml'
   push:
     # 特定のブランチに push したときにトリガーする
     branches:

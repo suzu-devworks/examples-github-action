@@ -69,10 +69,12 @@ jobs:
         run: |
           echo "::notice::【手動テスト】ワークフローが正常に成功しました！"
 
-          echo "# 🟢 テスト成功通知" >> $GITHUB_STEP_SUMMARY
-          echo "手動実行されたジョブが正常に完了しました。" >> $GITHUB_STEP_SUMMARY
-          echo "- **ステータス:** SUCCESS" >> $GITHUB_STEP_SUMMARY
-          echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          { 
+            echo "# 🟢 テスト成功通知" 
+            echo "手動実行されたジョブが正常に完了しました。"
+            echo "- **ステータス:** SUCCESS"
+            echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # 【失敗（赤）のときの通知】
       - name: Notify on Failure
@@ -80,7 +82,9 @@ jobs:
         run: |
           echo "::error::【手動テスト】ワークフローが失敗しました。確認してください！"
 
-          echo "# ❌ テストエラー通知" >> $GITHUB_STEP_SUMMARY
-          echo "手動実行されたジョブでエラーを検知しました。" >> $GITHUB_STEP_SUMMARY
-          echo "- **ステータス:** FAILURE" >> $GITHUB_STEP_SUMMARY
-          echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          { 
+            echo "# ❌ テストエラー通知"
+            echo "手動実行されたジョブでエラーを検知しました。"
+            echo "- **ステータス:** FAILURE"
+            echo "- [ログを確認する](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } >> "$GITHUB_STEP_SUMMARY"
