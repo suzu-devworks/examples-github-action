@@ -77,6 +77,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false # 証明書マニフェストを作らない
+          sbom: false # 証明書マニフェストを作らない
 
       - name: Export digest
         run: |
