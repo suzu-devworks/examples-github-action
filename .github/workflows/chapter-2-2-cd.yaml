@@ -8,8 +8,8 @@ on:
     branches:
       - main
     paths:
-      - './chapters/go/hello-api/**'
-      - './.github/workflows/chapter-2-2-cd.yaml'
+      - 'chapters/go/hello-api/**'
+      - '.github/workflows/chapter-2-2-cd.yaml'
   workflow_dispatch:
 
 permissions: {}

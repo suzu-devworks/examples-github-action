@@ -5,10 +5,10 @@ name: Chapter 5 - E2E test (Call)
 on:
   pull_request:
     paths:
-      - ".github/workflows/e2e-test.yaml"
-      - ".github/workflows/reusable-e2e-test.yaml"
-      - ".github/actions/setup-playwright/action.yaml"
-      - "packages/e2e/**"
+      - '.github/workflows/e2e-test.yaml'
+      - '.github/workflows/reusable-e2e-test.yaml'
+      - '.github/actions/setup-playwright/action.yaml'
+      - 'packages/e2e/**'
   workflow_dispatch:
 
 permissions: {}
@@ -17,6 +17,6 @@ jobs:
   e2e:
     permissions:
       contents: read
-    uses: ./.github/workflows/reusable-e2e-test.yaml
+    uses: ./.github/workflows/chapter-5-1-reusable-e2e-test.yaml
     with:
-      working-directory: "packages/e2e"
+      working-directory: 'packages/e2e'

@@ -11,7 +11,7 @@ on:
     branches:
       - main
     paths:
-      - './chapters/go/hello/**'
+      - 'chapters/go/hello/**'
       - '.github/workflows/chapter-1-hello.yaml'
 
   # issusのコメントでワークフローをトリガーする設定

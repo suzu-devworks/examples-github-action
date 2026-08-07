@@ -42,3 +42,4 @@ bin/
 .nuget/
 **/dotnet/runfile-discovery/
 **/cache.staging.json
+.DS_Store
