@@ -37,7 +37,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Connect postgres
         # ERROR: column d.daticulocale does not exist
         # This occurs when running "psql \l" from a v16 client to a v17 server.

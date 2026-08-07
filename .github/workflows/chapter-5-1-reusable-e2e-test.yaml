@@ -22,7 +22,7 @@ jobs:
       contents: read
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6
         with:
           package_json_file: ${{ inputs.working-directory }}/package.json
