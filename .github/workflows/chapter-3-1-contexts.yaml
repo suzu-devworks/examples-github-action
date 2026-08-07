@@ -1,11 +1,11 @@
 # Chapter 3 ワークフロー内で利用可能な値（コンテキスト）.
 ---
-name: Chapter 3 (1) - Context
+name: Chapter 3 (1) - Contexts
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/chapter-3-1-context.yaml'
+      - '.github/workflows/chapter-3-1-contexts.yaml'
   workflow_dispatch:
 
 permissions: {}
@@ -52,7 +52,8 @@ jobs:
         # runner コンテキストには主に、GitHub Actions の実行環境に関する情報が格納されています
         env:
           RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
+        run: |
+          echo "runner: $RUNNER_CONTEXT"
 
       - uses: actions/checkout@v7
         # steps コンテキストを利用するには、id を指定する必要があります
@@ -62,19 +63,25 @@ jobs:
         # steps コンテキストには、同じジョブ内で実行されたステップの情報が格納されています
         run: |
           # actions/checkout のステータスを表示
-          echo "${{ steps.checkout.conclusion }}"
+          echo "steps.checkout.conclusion: ${{ steps.checkout.conclusion }}"
 
       - name: job コンテキストの表示
         # job コンテキストには、同じジョブ内で実行されたステップの情報が格納されています
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
         run: |
-          echo "${{ job.status }}"
-          echo "${{ toJson(job) }}"
+          echo "job.status: ${{ job.status }}"
+          echo "job: $JOB_CONTEXT"
 
       - name: その他のコンテキストの表示
         # - see: https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+          NEEDS_CONTEXT: ${{ toJson(needs) }}
+          ENV_CONTEXT: ${{ toJson(env) }}
+          INPUTS_CONTEXT: ${{ toJson(inputs) }}
         run: |
-          echo "${{ toJson(matrix) }}"
-          echo "${{ toJson(needs) }}"
-          echo "${{ toJson(runner.os) }}"
-          echo "${{ toJson(env) }}"
-          echo "${{ toJson(inputs) }}"
+          echo "matrix: $MATRIX_CONTEXT"
+          echo "needs: $NEEDS_CONTEXT"
+          echo "env: $ENV_CONTEXT"
+          echo "inputs: $INPUTS_CONTEXT"

@@ -1,6 +1,6 @@
 # Chapter 3 ジョブの成果物の保存、次のジョブへの受け渡し.
 ---
-name: Chapter 3 (2) - Artiafacts
+name: Chapter 3 (2) - Saving and restoring artifacts
 
 on:
   pull_request:

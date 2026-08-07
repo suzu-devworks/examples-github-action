@@ -1,22 +1,33 @@
 # Chapter 4 ジョブによるコンテナの利用.
 ---
-name: Chapter 4 (1) - Containers
+name: Chapter 4 (1) - Use Containers
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/containers.yaml"
+      - '.github/workflows/chapter-4-1-containers.yaml'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# アプリケーションをコンテナで開発していたり、ミドルウェアをコンテナで立ち上げたりしている場合
+# ジョブにおいてもコンテナを利用することができます。
 
 jobs:
   container-test-job:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    container: 
-      image: golang:1.23.2
+    # ジョブコンテナを指定することで、ジョブ全体をコンテナ内で実行することができる.
+    container:
+      image: golang:1.26
     steps:
       - run: go version
 
@@ -24,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # サービスコンテナを指定することで、ジョブ内でサービスコンテナを利用することができる.
+    # サービスコンテナはジョブの開始時に起動され、ジョブの終了時に停止されます。
     services:
       postgres:
         image: postgres

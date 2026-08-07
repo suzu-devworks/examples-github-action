@@ -1,0 +1,55 @@
+# Chapter 5 ワークフローをDRYにする (Reusable workflow).
+---
+name: E2E playwright test
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        required: false
+        default: ${{ github.workspace }}
+      node-version:
+        type: string
+        required: false
+        default: '26'
+      pnpm-version:
+        type: string
+        required: false
+        default: '11'
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+# Resusable workflow はその名の通り再利用可能なワークフローです。
+# Custom actionと違い、単体でも実行可能なワークフローです。
+# Reusable workflow は workflow_call イベントをトリガーとして実行されます。
+# ワークフローと同じ記述が可能であるため、matrix strategy や concurrency なども利用可能です。
+# 例えば次のケースが考えられます。
+# - テストのワークフローをさまざまなタイミングで実行したい場合
+# - 環境ごとデプロイしたい
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ inputs.pnpm-version }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: pnpm install
+        working-directory: ${{ inputs.working-directory }}
+      # Use a custom.
+      - uses: ./.github/actions/setup-playwright
+        with:
+          working-directory: ${{ inputs.working-directory }}
+      - run: pnpm exec playwright test --project chromium
+        working-directory: ${{ inputs.working-directory }}

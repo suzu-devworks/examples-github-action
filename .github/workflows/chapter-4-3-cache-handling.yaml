@@ -1,0 +1,59 @@
+# Chapter 4 キャッシュの取り扱い、save, restore を用いてキャッシュのタイミングを制御する.
+---
+name: Chapter 4 (3) - Cache Handling (save and restore)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/chapter-4-3-cache-handling.yaml'
+  workflow_dispatch:
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 1つのリポジトリでキャッシュの最大容量は 10GB です。この制限を超えると、GitHubは新しいキャッシュを保存しますが、
+# 合計保存容量がリポジトリの制限を下回るまでキャッシュの削除をします。このときどのキャッシュが削除されるかは、
+# GitHubの内部アルゴリズムに依存するため、ユーザー側で制御することはできません。
+
+# actions/cache/save と actions/cache/restore を利用することで、キャッシュの保存と復元のタイミングを細かく制御することができます。
+
+jobs:
+  build-start:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ./path-to-cahce
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-
+
+      - run: echo "Do something"
+
+      - name: dummy
+        run: |
+          echo "current is: $(date)"
+          echo "cache value is: $(cat ./path-to-cahce/file 2>/dev/null)"
+          echo "ref: $REF"
+          mkdir -p ./path-to-cahce
+          date > ./path-to-cahce/file
+        env:
+          REF: ${{ github.ref }}
+
+      - uses: actions/cache/save@v6
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: |
+            ./path-to-cahce
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}

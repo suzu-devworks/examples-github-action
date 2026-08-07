@@ -1,11 +1,11 @@
 # Chapter 5 ファイルの変更を確認し、変更の有無でジョブをスキップするワークフロー
 ---
-name: Chapter 5 - A workflow that checks for file changes and skips the job if no changes are detected.
+name: Chapter 5 (3) - A workflow that checks for file changes and skips the job if no changes are detected.
 on:
   pull_request:
     paths:
-      - ".github/workflows/enterprise-ci.yaml"
-      - "project/**"
+      - '.github/workflows/enterprise-ci.yaml'
+      - 'chapters/project/**'
 
 permissions: {}
 defaults:
@@ -30,13 +30,14 @@ jobs:
           fetch-depth: 2 # ファイルの変更を取得するために必要
       - id: changed_directory
         env:
-          CHANGED: ${{ runner.temp }}/changed_files.txt
+          CHANGED: '${{ runner.temp }}/changed_files.txt'
         run: |
           git diff --name-only HEAD^ > "$CHANGED"
           grep --quiet '^project/frontend/' "$CHANGED" && echo "frontend=true" >> "$GITHUB_OUTPUT"
           grep --quiet '^project/backend/' "$CHANGED" && echo "backend=true" >> "$GITHUB_OUTPUT"
           grep --quiet '^project/renovate.json$' "$CHANGED" && echo "renovate=true" >> "$GITHUB_OUTPUT"
           cat "$CHANGED" #ファイルが変更されていない場合にエラーになるのを防ぎ、かつ、デバッグ時の助けにするために git diff の内容をログに出力する
+
   frontend:
     runs-on: ubuntu-latest
     needs: changed_directory
@@ -47,6 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: echo "Frontend passes lint, tests, and build are listed here."
+
   backend:
     runs-on: ubuntu-latest
     needs: changed_directory
@@ -57,6 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: echo "Backend passes lint, tests, and build are listed here."
+
   renovate:
     runs-on: ubuntu-latest
     needs: changed_directory

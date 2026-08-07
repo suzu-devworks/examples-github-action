@@ -1,15 +1,25 @@
-# Chapter 5 メンテナンス性を考慮したワークフロー (Custom actions).
+# Chapter 5 ワークフローをDRYにする (Custom actions).
 ---
-name: "Setup Playwright"
-description: "Setup Playwright with deps and cache"
+name: 'Setup Playwright'
+description: 'Setup Playwright with deps and cache'
 inputs:
   working-directory:
-    description: "Working directory"
+    description: 'Working directory'
     required: false
     default: ${{ github.workspace }}
 
+# Custom action は再利用可能なステップです。
+# Custom action の種類の一つとして 同じ yaml で記載する Composite action があります。
+# Composite action は複数のステップをまとめて再利用可能にすることができます。
+# たとえば次のケースが考えられます。
+# - 公開されている setup-* がないツールのインストール
+# - 認証
+# - キャッシュの設定
+# - 成果物やテストデータのアップロード
+# - 完了通知
+
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Get Playwright version
       shell: bash
