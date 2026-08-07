@@ -185,12 +185,13 @@ jobs:
       run:
         working-directory: './chapters/dotnet/HelloWorld/'
     env:
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      NUGET_PACKAGES: '${{ github.workspace }}/.nuget/packages'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/cache@v6
         with:
-          path: ~/.nuget/packages
+          path: ${{ env.NUGET_PACKAGES }}
+          # キーを指定することで、キャッシュ範囲を制御できます。
           key: |
             ${{ runner.os }}-${{ runner.arch }}-nuget-cache-${{ hashFiles('**/packages.lock.json') }}-${{ github.run_id }}
           restore-keys: |
