@@ -5,10 +5,20 @@ name: Chapter 4 (2) - Matrix strategy
 on:
   pull_request:
     paths:
-      - '.github/workflows/matrix.yaml'
+      - '.github/workflows/chapter-4-2-matrix.yaml'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Matrix strategy を利用することで、複数のジョブを並列に実行することができます。
+# アプリケーションのビルドを複数の OS や Go のバージョンで実行する場合などに有効です。
 
 jobs:
   build:
@@ -18,6 +28,7 @@ jobs:
       contents: read
     timeout-minutes: 5
     strategy:
+      # 次の場合、go-version と os の組み合わせで 6 つのジョブが並列に実行されます。
       matrix:
         go-version: ['1.25', '1.26']
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -25,8 +36,7 @@ jobs:
       run:
         working-directory: './chapters/go/hello-api/'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
       - name: Ser up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v7
         with:

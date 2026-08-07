@@ -1,11 +1,11 @@
 # Chapter 3 ワークフロー内で利用可能な値（コンテキスト）.
 ---
-name: Chapter 3 (1) - Context
+name: Chapter 3 (1) - Contexts
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/chapter-3-1-context.yaml'
+      - '.github/workflows/chapter-3-1-contexts.yaml'
   workflow_dispatch:
 
 permissions: {}

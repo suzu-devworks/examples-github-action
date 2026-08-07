@@ -1,14 +1,24 @@
 # Chapter 4 ユースケース 2. 動的にジョブを構築する.
 ---
-name: Chapter 4 - Matrix strategy use case 2
+name: Chapter 4 (2) - Use Case 2. Dynamically construct jobs
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/matrix-use-case2.yaml"
+      - '.github/workflows/chapter-4-2-matrix2-dynamic.yaml'
   workflow_dispatch:
 
 permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Matrix strategy はJSONを入力として受け取ることができます。
+# たとえば、ジョブ1でJSONを生成し、ジョブ2でそのJSONを利用してMatrix strategyを構築することができます。
 
 jobs:
   job1:
