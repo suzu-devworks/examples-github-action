@@ -6,21 +6,21 @@ on:
   pull_request:
     paths:
       # Since variables cannot be used in `on.paths`, this part must be hardcoded.
-      - "articles/changed-detenctions/**"
-      - ".github/workflows/articles-changed-detection.yaml"
+      - 'articles/changed-detections/**'
+      - '.github/workflows/articles-changed-detection.yaml'
   workflow_dispatch:
 
 permissions: {}
 defaults:
   run:
     shell: bash
-    
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  TARGET_BASE_DIR: "articles/changed-detenctions"
+  TARGET_BASE_DIR: 'articles/changed-detections'
 
 jobs:
   detect-changes:
@@ -92,7 +92,7 @@ jobs:
           echo "=========================================================="
           echo "🚀 Processing Project: ${{ matrix.project }}"
           echo "=========================================================="
-      
+
       - name: Find Target and Define Assets Path
         run: |
           # 1. First, search for the target
@@ -121,7 +121,7 @@ jobs:
       - name: Build for ${{ matrix.project }}
         run: |
           echo ${{ env.TARGET_PATH }}
-      
+
       - name: Run Test Assets Scripts (If exists)
         run: |
           SCRIPT_PATH="$TARGET_BASE_DIR/${{ matrix.project }}/scripts/generate-test-assets.sh"
