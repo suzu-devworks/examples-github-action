@@ -22,6 +22,8 @@ concurrency:
 
 jobs:
   e2e:
+    permissions:
+      contents: read
     uses: ./.github/workflows/reusable-e2e-test.yaml
     with:
       working-directory: './chapters/e2e'
