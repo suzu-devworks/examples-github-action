@@ -1,0 +1,41 @@
+# OIDC認証を使用したワークフローです。
+---
+name: Articles - OIDC authentication sample
+
+on:
+  workflow_dispatch:
+    inputs:
+      auth_method:
+        description: '認証方法'
+        required: true
+        default: 'auth0'
+        type: choice
+        options:
+          - google
+          - auth0
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  google-auth:
+    name: Authenticate to Google Cloud
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.auth_method == 'google' }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+  oidc-auth0-curl:
+    name: OIDC authentication with curl (Auth0)
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.auth_method == 'auth0' }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
