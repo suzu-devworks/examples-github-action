@@ -1,6 +1,6 @@
 # Chapter 4 ユースケース 2. 動的にジョブを構築する.
 ---
-name: Chapter 4 (2) - Use Case 2. Dynamically construct jobs
+name: Chapter 4 (2) - 2. Dynamically construct jobs
 
 on:
   pull_request:
