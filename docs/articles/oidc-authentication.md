@@ -2,8 +2,10 @@
 
 ## Overview
 
-Learn how GitHub Actions can completely eliminate static passwords (such as private key JSON) and use OIDC (OpenID Connect) Token Exchange (RFC 8693) to securely access GCP (Google Cloud) resources.
-You can experience the essence of OIDC authentication by using curl to reproduce the "raw HTTP communication" behind the scenes that is automated by the official Action.
+Learn how GitHub Actions can completely eliminate static passwords (such as private key JSON) and
+use OIDC (OpenID Connect) Token Exchange (RFC 8693) to securely access GCP (Google Cloud) resources.
+You can experience the essence of OIDC authentication by using curl to reproduce the "raw HTTP communication"
+behind the scenes that is automated by the official Action.
 
 With Auth0, I couldn't set up token exchange from the management screen, so I gave up.
 
@@ -11,7 +13,9 @@ With Auth0, I couldn't set up token exchange from the management screen, so I ga
 
 ### What is Workload Identity integration?
 
-Workload Identity integration is a mechanism that securely changes OIDC ID tokens issued by external ID providers (such as GitHub and AWS) to temporary access tokens in the cloud (such as Google Cloud) through token exchange based on OAuth 2.0 specifications (RFC 8693), eliminating the need to manage long-term private keys.
+Workload Identity integration is a mechanism that securely changes OIDC ID tokens issued by external ID providers
+(such as GitHub and AWS) to temporary access tokens in the cloud (such as Google Cloud) through token exchange based
+on OAuth 2.0 specifications (RFC 8693), eliminating the need to manage long-term private keys.
 
 - [Workload Identity Federation - Google Cloud Documentation](https://docs.cloud.google.com/iam/docs/workload-identity-federation?hl=ja)
 
@@ -65,9 +69,11 @@ All operations can be completed using the browser's management screen (console).
   5. Configure attribute conditions.
      - `assertion.repository_id=="{GITHUB REPOSITORY_ID}"`
      > [!NOTE]
-     > Using name attributes such as `repository` or `repository_owner` presents an attack risk, so numeric attributes such as `*_id` are recommended.
+     > Using name attributes such as `repository` or `repository_owner` presents an attack risk,
+     so numeric attributes such as `*_id` are recommended.
 
-  6. Click Save. Make a note of the numerical part of the project number from the complete resource name of "Provider" displayed on the screen (projects/[project number]/...).
+  6. Click Save. Make a note of the numerical part of the project number from the complete resource name of
+    "Provider" displayed on the screen (projects/[project number]/...).
 
   If you're doing it via the command line:
 
@@ -135,15 +141,18 @@ Play it safe and hide and manage all GCP infrastructure configuration informatio
 
 ### Step 3. Deploy the GitHub Actions workflow
 
-Place the sample workflow in [.github/workflows/articles-oidc-authentication.yaml](.github/workflows/articles-oidc-authentication.yaml) in the repository.
-When starting manually (workflow_dispatch), you can test by switching between official action (action) and raw HTTP request (curl).
+Place the sample workflow in [.github/workflows/articles-oidc-authentication.yaml](.github/workflows/articles-oidc-authentication.yaml)
+in the repository. When starting manually (workflow_dispatch), you can test by switching between official action
+ (action) and raw HTTP request (curl).
 
 ### Step 4. Try it out
 
   1. Open the Actions tab of your GitHub repository.
   2. Select “GCP_OIDC_Method_Comparison” from the left menu.
-  3. Press the "Run workflow" button on the right side of the screen, select the authentication method (action or curl), and execute.
-  4. After the execution is complete, open the logs and confirm that access to the GCP side is successful even though we have not passed any static passwords.
+  3. Press the "Run workflow" button on the right side of the screen, select the authentication method (action or curl),
+      and execute.
+  4. After the execution is complete, open the logs and confirm that access to the GCP side is successful even though
+      we have not passed any static passwords.
 
 ## References
 
