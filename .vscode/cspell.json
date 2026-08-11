@@ -12,7 +12,7 @@
     "yarn.lock",
     "pnpm-lock.yaml",
     "**/*.csproj",
-    "packages.lock.json",
+    "packages.lock.json"
   ],
   "dictionaryDefinitions": [],
   "dictionaries": [],
@@ -21,6 +21,7 @@
     "devworks",
     "Durandal",
     "gonic",
+    "multiplatform",
     "resourcemanager",
     "serviceusage",
     "suzu",
