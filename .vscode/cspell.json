@@ -1,0 +1,32 @@
+{
+  "version": "0.2",
+  "useGitignore": true,
+  "ignorePaths": [
+    "**/.*/**",
+    ".editorconfig",
+    ".git*",
+    "*.json",
+    "*.yaml",
+    "go.mod",
+    "go.sum",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "**/*.csproj",
+    "packages.lock.json"
+  ],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "cicdhandson",
+    "devworks",
+    "Durandal",
+    "gonic",
+    "multiplatform",
+    "resourcemanager",
+    "serviceusage",
+    "suzu",
+    "viewports"
+  ],
+  "ignoreWords": [],
+  "import": []
+}

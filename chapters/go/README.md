@@ -1,6 +1,6 @@
 # github.com/suzu-devworks/examples-github-action/chapters/go
 
-## Create a new Go module for this chapter.
+## Create a new Go module for this chapter
 
 最初のモジュール作成
 
