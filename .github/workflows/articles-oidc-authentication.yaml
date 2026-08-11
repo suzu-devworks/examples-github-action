@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       auth_method:
-        description: '認証方法'
+        description: '認証方法を選択してください'
         required: true
-        default: 'auth0'
+        default: 'action'
         type: choice
         options:
-          - google
-          - auth0
+          - action
+          - curl
 
 permissions: {}
 defaults:
@@ -24,18 +24,193 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  google-auth:
-    name: Authenticate to Google Cloud
+  validation:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.auth_method == 'google' }}
     timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
+    permissions:
+      contents: read
 
-  oidc-auth0-curl:
-    name: OIDC authentication with curl (Auth0)
-    runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.auth_method == 'auth0' }}
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      # 🟢 シークレット未設定時の安全対策防衛ステップ
+      - name: Check Secrets Configuration
+        env:
+          GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
+          GCP_POOL_ID: ${{ secrets.GCP_POOL_ID }}
+          GCP_PROVIDER_ID: ${{ secrets.GCP_PROVIDER_ID }}
+          GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
+        if: env.GCP_PROJECT_NUMBER == '' || env.GCP_POOL_ID == '' || env.GCP_PROVIDER_ID == '' || env.GCP_SA_EMAIL == ''
+        run: |
+          echo "::error::GitHub Secrets が設定されていません。リポジトリの設定画面から登録してください。"
+          exit 1
+
+      - name: Successful Secrets Validation
+        run: |
+          echo "GitHub Secrets が正しく設定されていることを確認しました。"
+
+  oidc-auth-action:
+    # -------------------------------------------------------------
+    # パターンA: 公式Actionを使用する方法
+    # -------------------------------------------------------------
+    name: OIDC Authentication via Action
+    needs: validation
+    if: ${{ inputs.auth_method == 'action' }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write # 🟢 一時的な身分証明書（JWT）を発行するために必須
+
+    steps:
+      - uses: actions/checkout@v7 # 🟢 必ず行ってください
+
+      - name: '[Action] Authenticate to Google Cloud'
+        id: 'auth'
+        uses: google-github-actions/auth@v3
+        with:
+          # 以下の入力項目は、ワークロードIDフェデレーションを介してGoogle Cloudへの認証を行うためのものです。
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.GCP_PROVIDER_ID }}'
+          service_account: '${{ secrets.GCP_SA_EMAIL }}'
+          create_credentials_file: 'true'
+
+      - name: '[Action] Run gcloud CLI Test'
+        # google-github-actions/auth Actionを使用して認証した後、gcloud CLIを使用してGoogle Cloudのリソースにアクセスできるかをテストします。
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          echo "公式Actionによる認証に成功しました。"
+          gcloud auth list
+
+          echo "------------------------------"
+          gcloud projects describe "${GCP_PROJECT_ID}" \
+            || echo "権限が不足しています。"
+
+          echo "------------------------------"
+          gcloud services list --project="${GCP_PROJECT_ID}" --enabled \
+            || echo "権限が不足しています。"
+
+          echo "------------------------------"
+          gcloud storage buckets list --project="${GCP_PROJECT_ID}" \
+            || echo "権限が不足しています。"
+
+  oidc-auth-curl:
+    # -------------------------------------------------------------
+    # パターンB: curlを使用する場合（OIDCトークン交換の可視化）
+    # -------------------------------------------------------------
+    name: OIDC Authentication with curl
+    needs: validation
+    if: ${{ inputs.auth_method == 'curl' }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write # 🟢 一時的な身分証明書（JWT）を発行するために必須
+    env:
+      GCP_WORKLOAD_IDENTITY_PROVIDER: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.GCP_PROVIDER_ID }}'
+    steps:
+      - name: '[curl] 1. Get GitHub OIDC Token'
+        run: |
+          AUDIENCE="https://iam.googleapis.com/${GCP_WORKLOAD_IDENTITY_PROVIDER}"
+
+          # GCP専用のAudience（デフォルトURL）を指定してGitHubサーバーから生のJWTを取得
+          GH_JWT=$(curl -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUDIENCE" \
+            | jq -r '.value')
+
+          # マスクを適用して環境変数ファイルに保存
+          echo "::add-mask::$GH_JWT"
+          echo "GH_JWT=$GH_JWT" >> "$GITHUB_ENV"
+          echo "JWT length: ${#GH_JWT}"
+
+      # STS(Security Token Service) エンドポイントに送り、GCPの「連携トークン」に交換する
+      # https://docs.cloud.google.com/iam/docs/reference/sts/rest/v1/TopLevel/token
+      - name: '[curl] 2. Exchange Token via GCP STS'
+        env:
+          GCP_WORKLOAD_IDENTITY_PROVIDER: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.GCP_PROVIDER_ID }}'
+        run: |
+          AUDIENCE="//iam.googleapis.com/${GCP_WORKLOAD_IDENTITY_PROVIDER}"
+
+          RESPONSE=$(curl -X POST \
+            "https://sts.googleapis.com/v1/token" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"grantType\": \"urn:ietf:params:oauth:grant-type:token-exchange\",
+              \"audience\": \"$AUDIENCE\",
+              \"scope\": \"https://www.googleapis.com/auth/cloud-platform\",
+              \"requestedTokenType\": \"urn:ietf:params:oauth:token-type:access_token\",
+              \"subjectTokenType\": \"urn:ietf:params:oauth:token-type:jwt\",
+              \"subjectToken\": \"$GH_JWT\"
+            }")
+
+          # Extract access_token (leave empty string if it does not exist)
+          FEDERATED_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token // empty')
+          echo "Token length: ${#FEDERATED_TOKEN}"
+
+          if [ -z "$FEDERATED_TOKEN" ]; then
+            echo "::error::Failed to exchange token via GCP STS."
+            echo "$RESPONSE" | jq -r '{error: .error, description: .error_description}'
+            exit 1
+          fi
+
+          echo "::add-mask::$FEDERATED_TOKEN"
+          echo "FEDERATED_TOKEN=$FEDERATED_TOKEN" >> "$GITHUB_ENV"
+
+      # 連携トークンを使い、指定したサービスアカウントの「最終アクセストークン」を生成する
+      # https://docs.cloud.google.com/iam/docs/reference/credentials/rest/v1/projects.serviceAccounts/generateAccessToken
+      - name: '[curl] 3. Assume GCP Service Account'
+        env:
+          GCP_NAME: 'projects/-/serviceAccounts/${{ secrets.GCP_SA_EMAIL }}'
+        run: |
+          RESPONSE=$(curl -X POST \
+            "https://iamcredentials.googleapis.com/v1/${GCP_NAME}:generateAccessToken" \
+            -H "Authorization: Bearer $FEDERATED_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"scope\": [
+                \"https://www.googleapis.com/auth/iam\",
+                \"https://www.googleapis.com/auth/cloud-platform.read-only\",
+                \"https://www.googleapis.com/auth/devstorage.read_only\"
+              ]
+            }")
+
+          # Extract access_token (leave empty string if it does not exist)
+          GCP_ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.accessToken // empty')
+          echo "Token length: ${#GCP_ACCESS_TOKEN}"
+
+          if [ -z "$GCP_ACCESS_TOKEN" ]; then
+            echo "::error::Failed to assume GCP Service Account."
+            echo "$RESPONSE" | jq -r '{error: .error, description: .error_description}'
+            exit 1
+          fi
+
+          echo "::add-mask::$GCP_ACCESS_TOKEN"
+          echo "GCP_ACCESS_TOKEN=$GCP_ACCESS_TOKEN" >> "$GITHUB_ENV"
+
+      # 生のトークンを使ってGCPのREST APIを直接叩いてみる
+      - name: '[curl] 4. Run Cloud Storage API Test'
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          echo "curlによる生のトークン交換（Token Exchange）に成功しました！"
+
+          # 取得した最終トークンをBearerヘッダーにセットしてAPIを実行
+
+          echo "------------------------------"
+          curl -f -X GET \
+            "https://cloudresourcemanager.googleapis.com/v1/projects/${GCP_PROJECT_ID}" \
+            -H "Authorization: Bearer $GCP_ACCESS_TOKEN" \
+            -H "Accept: application/json"
+          
+          echo "------------------------------"
+          curl -f -X GET \
+            "https://serviceusage.googleapis.com/v1/projects/${GCP_PROJECT_ID}/services?filter=state:ENABLED" \
+            -H "Authorization: Bearer $GCP_ACCESS_TOKEN" \
+            -H "Accept: application/json" \
+            | jq -r '[ .services[].config.name ]'
+
+          echo "------------------------------"
+          curl -f -X GET \
+            "https://storage.googleapis.com/storage/v1/b?project=${GCP_PROJECT_ID}" \
+            -H "Authorization: Bearer $GCP_ACCESS_TOKEN" \
+            -H "Accept: application/json"
