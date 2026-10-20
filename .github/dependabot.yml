@@ -8,14 +8,17 @@ updates:
   - package-ecosystem: "devcontainers" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      devcontainers-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions" 
     directory: "/" 
     schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          # - version-update:semver-minor
-          - version-update:semver-patch
+      interval: "monthly"
+    groups: 
+      github-actions-deps:
+        patterns:
+          - "*"
