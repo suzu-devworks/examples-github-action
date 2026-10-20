@@ -5,20 +5,74 @@
 
 version: 2
 updates:
-  - package-ecosystem: "devcontainers" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # 1. Devcontainers
+  - package-ecosystem: "devcontainers"
+    directory: "/"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 0
     groups:
-      devcontainers-deps:
+      devcontainers-security:
+        applies-to: "security-updates"
         patterns:
           - "*"
 
-  - package-ecosystem: "github-actions" 
-    directory: "/" 
+  # 2. GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "monthly"
-    groups: 
-      github-actions-deps:
+    open-pull-requests-limit: 0
+    groups:
+      actions-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  # 3. Node.js (npm / pnpm / yarn)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 0
+    groups:
+      npm-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  # 4. Python (uv / pip)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 0
+    groups:
+      pip-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  # 5. .NET (C#)
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 0
+    groups:
+      nuget-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  # 6. Go
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 0
+    groups:
+      gomod-security:
+        applies-to: "security-updates"
         patterns:
           - "*"
