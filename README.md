@@ -46,7 +46,7 @@ inaccurate or questionable parts!
 
 - Articles
   - [Automatically detect changes and execute in parallel for each project](./.github/workflows/articles-changed-detection.yaml)
-  - [Build and push multiplatform Docker images to GitHub Container Registry](./.github/workflows/articles-multi-platform-docker-build.yaml)
+  - [Build and push multiplatform Docker images to GitHub Container Registry](./.github/workflows/articles-docker-multi-platform.yaml)
   - [OIDC authentication (Workload Identity federation)](./.github/workflows/articles-oidc-authentication.yaml)
 
 - Appendix

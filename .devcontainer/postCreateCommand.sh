@@ -7,5 +7,6 @@ echo "DIR:" ${script_dir}
 echo
 
 # Install GitHub CLI extension for actions lock
-# Update command `gh actions-lock --no-narrow`
+# To perform an update, run the command:
+#   `gh actions-lock --relock --no-narrow`.
 gh extension install github/gh-actions-lock
