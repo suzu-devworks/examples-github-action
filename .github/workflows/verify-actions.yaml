@@ -21,6 +21,9 @@ jobs:
   # actions-lock を使用するサイトでは、CIの最優先（最初に）ロックファイル検証を行ってください
   verify-lock:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -30,3 +33,5 @@ jobs:
 
       - name: Verify actions-lock
         run: gh actions-lock --verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
