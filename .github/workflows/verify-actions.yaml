@@ -1,0 +1,29 @@
+name: Vetrify Github Actions
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # actions-lock を使用するサイトでは、CIの最優先（最初に）ロックファイル検証を行ってください
+  verify-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Verify actions-lock
+        run: gh actions-lock --verify

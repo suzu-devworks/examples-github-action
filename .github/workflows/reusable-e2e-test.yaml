@@ -48,7 +48,7 @@ jobs:
       - run: pnpm install
         working-directory: ${{ inputs.working-directory }}
       # Use a custom.
-      - uses: ./.github/actions/setup-playwright
+      - uses: $/.github/actions/setup-playwright
         with:
           working-directory: ${{ inputs.working-directory }}
       - run: pnpm exec playwright test --project chromium
